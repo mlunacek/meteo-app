@@ -3,7 +3,10 @@
       <div class="tabs">
         <ul>
           <router-link to="/" tag="li" active-class='is-active' exact><a><icon-base><icon-home/></icon-base></a></router-link>
+        
+          <span> Broomfield </span>
         </ul>
+       
       </div>
   </div>
 </template>

@@ -72,9 +72,12 @@ export default {
         handleResize() {
             this.window.width = window.innerWidth;
             this.window.height = window.innerHeight;
-            // this.graph.config(this.window.height-70, this.window.width-30);
-            // // this.graph.config(this.window.height-70, 800);
-            // this.graph.draw();
+            
+            this.graph.config(this.window.height-50, 
+                              this.window.width-20,
+                              20);   
+            this.graph.setKey('nam')      
+            this.graph.draw();
         },
 
         onData() {

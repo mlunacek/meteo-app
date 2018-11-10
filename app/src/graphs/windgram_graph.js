@@ -20,11 +20,12 @@ export class WindGramGraph {
      
         // let defaultHeight = 300;
         // let defaultHeight = 1050;
-        let defaultMargin = {'top': 10, 'left': 40, 'right': 10, 'bottom': 40 };
+        let defaultMargin = {'top': 10, 'left': 20, 'right': 10, 'bottom': 40 };
         
         this.max_y = max_y
         let outerWidth = defaultWidth
         let outerHeight = d3.min([defaultHeight, 380]);
+        outerHeight = defaultHeight;
         this.margin =defaultMargin;
         
         this.width =  outerWidth - this.margin.left - this.margin.right;
@@ -179,7 +180,8 @@ export class WindGramGraph {
     setKey(key){
         this.key = key;
     }
-        
+    
+    
     draw(){
 
         let chart = this;

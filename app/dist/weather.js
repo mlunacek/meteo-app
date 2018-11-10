@@ -20835,6 +20835,9 @@ Vue.compile = compileToFunctions;
 //
 //
 //
+//
+//
+//
 
 
 
@@ -32908,9 +32911,10 @@ module.exports = function(module) {
         handleResize() {
             this.window.width = window.innerWidth;
             this.window.height = window.innerHeight;
-            // this.graph.config(this.window.height-70, this.window.width-30);
-            // // this.graph.config(this.window.height-70, 800);
-            // this.graph.draw();
+
+            this.graph.config(this.window.height - 50, this.window.width - 20, 20);
+            this.graph.setKey('nam');
+            this.graph.draw();
         },
 
         onData() {
@@ -59512,7 +59516,7 @@ module.exports = function listToStyles (parentId, list) {
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__babel_loader_node_modules_vue_loader_lib_selector_type_script_index_0_header_vue__ = __webpack_require__(96);
 /* unused harmony namespace reexport */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__node_modules_vue_loader_lib_template_compiler_index_id_data_v_8323b75e_hasScoped_false_buble_transforms_node_modules_vue_loader_lib_selector_type_template_index_0_header_vue__ = __webpack_require__(335);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__node_modules_vue_loader_lib_template_compiler_index_id_data_v_8188bb32_hasScoped_false_buble_transforms_node_modules_vue_loader_lib_selector_type_template_index_0_header_vue__ = __webpack_require__(335);
 function injectStyle (ssrContext) {
   __webpack_require__(321)
 }
@@ -59532,7 +59536,7 @@ var __vue_scopeId__ = null
 var __vue_module_identifier__ = null
 var Component = normalizeComponent(
   __WEBPACK_IMPORTED_MODULE_0__babel_loader_node_modules_vue_loader_lib_selector_type_script_index_0_header_vue__["a" /* default */],
-  __WEBPACK_IMPORTED_MODULE_1__node_modules_vue_loader_lib_template_compiler_index_id_data_v_8323b75e_hasScoped_false_buble_transforms_node_modules_vue_loader_lib_selector_type_template_index_0_header_vue__["a" /* default */],
+  __WEBPACK_IMPORTED_MODULE_1__node_modules_vue_loader_lib_template_compiler_index_id_data_v_8188bb32_hasScoped_false_buble_transforms_node_modules_vue_loader_lib_selector_type_template_index_0_header_vue__["a" /* default */],
   __vue_template_functional__,
   __vue_styles__,
   __vue_scopeId__,
@@ -59553,7 +59557,7 @@ var content = __webpack_require__(322);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(28)("df05b33a", content, true, {});
+var update = __webpack_require__(28)("16f1720c", content, true, {});
 
 /***/ }),
 /* 322 */
@@ -59812,7 +59816,7 @@ var esExports = { render: render, staticRenderFns: staticRenderFns }
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-var render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',[_c('div',{staticClass:"tabs"},[_c('ul',[_c('router-link',{attrs:{"to":"/","tag":"li","active-class":"is-active","exact":""}},[_c('a',[_c('icon-base',[_c('icon-home')],1)],1)])],1)])])}
+var render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',[_c('div',{staticClass:"tabs"},[_c('ul',[_c('router-link',{attrs:{"to":"/","tag":"li","active-class":"is-active","exact":""}},[_c('a',[_c('icon-base',[_c('icon-home')],1)],1)]),_vm._v(" "),_c('span',[_vm._v(" Broomfield ")])],1)])])}
 var staticRenderFns = []
 var esExports = { render: render, staticRenderFns: staticRenderFns }
 /* harmony default export */ __webpack_exports__["a"] = (esExports);
@@ -60190,7 +60194,7 @@ var esExports = { render: render, staticRenderFns: staticRenderFns }
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__babel_loader_node_modules_vue_loader_lib_selector_type_script_index_0_windgram_vue__ = __webpack_require__(223);
 /* unused harmony namespace reexport */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__node_modules_vue_loader_lib_template_compiler_index_id_data_v_3851f7c8_hasScoped_false_buble_transforms_node_modules_vue_loader_lib_selector_type_template_index_0_windgram_vue__ = __webpack_require__(684);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__node_modules_vue_loader_lib_template_compiler_index_id_data_v_641416e8_hasScoped_false_buble_transforms_node_modules_vue_loader_lib_selector_type_template_index_0_windgram_vue__ = __webpack_require__(684);
 function injectStyle (ssrContext) {
   __webpack_require__(344)
 }
@@ -60210,7 +60214,7 @@ var __vue_scopeId__ = null
 var __vue_module_identifier__ = null
 var Component = normalizeComponent(
   __WEBPACK_IMPORTED_MODULE_0__babel_loader_node_modules_vue_loader_lib_selector_type_script_index_0_windgram_vue__["a" /* default */],
-  __WEBPACK_IMPORTED_MODULE_1__node_modules_vue_loader_lib_template_compiler_index_id_data_v_3851f7c8_hasScoped_false_buble_transforms_node_modules_vue_loader_lib_selector_type_template_index_0_windgram_vue__["a" /* default */],
+  __WEBPACK_IMPORTED_MODULE_1__node_modules_vue_loader_lib_template_compiler_index_id_data_v_641416e8_hasScoped_false_buble_transforms_node_modules_vue_loader_lib_selector_type_template_index_0_windgram_vue__["a" /* default */],
   __vue_template_functional__,
   __vue_styles__,
   __vue_scopeId__,
@@ -60231,7 +60235,7 @@ var content = __webpack_require__(345);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(28)("b297683e", content, true, {});
+var update = __webpack_require__(28)("f58cc0a2", content, true, {});
 
 /***/ }),
 /* 345 */
@@ -60274,11 +60278,12 @@ class WindGramGraph {
 
         // let defaultHeight = 300;
         // let defaultHeight = 1050;
-        let defaultMargin = { 'top': 10, 'left': 40, 'right': 10, 'bottom': 40 };
+        let defaultMargin = { 'top': 10, 'left': 20, 'right': 10, 'bottom': 40 };
 
         this.max_y = max_y;
         let outerWidth = defaultWidth;
         let outerHeight = __WEBPACK_IMPORTED_MODULE_1_d3__["g" /* min */]([defaultHeight, 380]);
+        outerHeight = defaultHeight;
         this.margin = defaultMargin;
 
         this.width = outerWidth - this.margin.left - this.margin.right;
