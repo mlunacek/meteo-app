@@ -32,6 +32,7 @@ export default function makeStore(initialState){
              
                 Vue.http.get(url)
                     .then(function(response){
+                        console.log(response)
                         commit("FETCH_SOUNDING", {'id': id, 
                                                   'data': response.body});
                         callback();

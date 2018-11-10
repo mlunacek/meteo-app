@@ -55,16 +55,15 @@ export default {
     },
    
       
-    
-
     mounted() {
-        
-        // this.$store.dispatch("fetchSounding", { url: this.url, 
-        //                                         id: this.$route.params.id,
-        //                                         callback: this.onData })   
-              
+
         console.log("mounted")
-        this.onData();
+        this.$store.dispatch("fetchSounding", { url: this.url, 
+                                                id: this.$route.params.id,
+                                                callback: this.onData })   
+              
+        
+        // this.onData();
 
     },
 
