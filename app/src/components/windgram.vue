@@ -85,22 +85,22 @@ export default {
 
             let data = this.sounding;
             this.graph = new WindGramGraph("windgraphid");
-            this.graph.config(this.window.height/2-50, 
-                              this.window.width-30,
+            this.graph.config(this.window.height-50, 
+                              this.window.width-20,
                               20);
             // this.graph.config(this.window.height-70, 800);
             this.graph.data(data);
-            this.graph.setKey('hrrr')
+            this.graph.setKey('nam')
             this.graph.draw();
 
 
-            this.graph2 = new WindGramGraph("windgraphidfocus");
-            this.graph2.config(this.window.height/2-50, 
-                              this.window.width-30,
-                              9);
-            this.graph2.data(data);
-            this.graph2.setKey('hrrr')
-            this.graph2.draw();
+            // this.graph2 = new WindGramGraph("windgraphidfocus");
+            // this.graph2.config(this.window.height/2-50, 
+            //                   this.window.width-30,
+            //                   9);
+            // this.graph2.data(data);
+            // this.graph2.setKey('hrrr')
+            // this.graph2.draw();
 
         }
     },

@@ -173,15 +173,7 @@ export class WindGramGraph {
         let init_zoom = d3.zoomIdentity.translate(0, 0).scale(3);
         chart.canvasChart.call(chart.zoom_function.transform,  init_zoom );
 
-        
-        // let start_date = this.x2.range()[0];
-        // console.log(this.x2.range())
-        // console.log(start_date);
-
-        // let end_date = start_date.setDate(start_date + 1)
-
-      
-      
+          
     }
     
     setKey(key){

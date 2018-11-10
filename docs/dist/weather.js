@@ -32921,17 +32921,19 @@ module.exports = function(module) {
 
             let data = this.sounding;
             this.graph = new __WEBPACK_IMPORTED_MODULE_0__graphs_windgram_graph__["a" /* WindGramGraph */]("windgraphid");
-            this.graph.config(this.window.height / 2 - 50, this.window.width - 30, 20);
+            this.graph.config(this.window.height - 50, this.window.width - 20, 20);
             // this.graph.config(this.window.height-70, 800);
             this.graph.data(data);
-            this.graph.setKey('hrrr');
+            this.graph.setKey('nam');
             this.graph.draw();
 
-            this.graph2 = new __WEBPACK_IMPORTED_MODULE_0__graphs_windgram_graph__["a" /* WindGramGraph */]("windgraphidfocus");
-            this.graph2.config(this.window.height / 2 - 50, this.window.width - 30, 9);
-            this.graph2.data(data);
-            this.graph2.setKey('hrrr');
-            this.graph2.draw();
+            // this.graph2 = new WindGramGraph("windgraphidfocus");
+            // this.graph2.config(this.window.height/2-50, 
+            //                   this.window.width-30,
+            //                   9);
+            // this.graph2.data(data);
+            // this.graph2.setKey('hrrr')
+            // this.graph2.draw();
         }
     },
 
@@ -60188,7 +60190,7 @@ var esExports = { render: render, staticRenderFns: staticRenderFns }
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__babel_loader_node_modules_vue_loader_lib_selector_type_script_index_0_windgram_vue__ = __webpack_require__(223);
 /* unused harmony namespace reexport */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__node_modules_vue_loader_lib_template_compiler_index_id_data_v_dca05c08_hasScoped_false_buble_transforms_node_modules_vue_loader_lib_selector_type_template_index_0_windgram_vue__ = __webpack_require__(684);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__node_modules_vue_loader_lib_template_compiler_index_id_data_v_3851f7c8_hasScoped_false_buble_transforms_node_modules_vue_loader_lib_selector_type_template_index_0_windgram_vue__ = __webpack_require__(684);
 function injectStyle (ssrContext) {
   __webpack_require__(344)
 }
@@ -60208,7 +60210,7 @@ var __vue_scopeId__ = null
 var __vue_module_identifier__ = null
 var Component = normalizeComponent(
   __WEBPACK_IMPORTED_MODULE_0__babel_loader_node_modules_vue_loader_lib_selector_type_script_index_0_windgram_vue__["a" /* default */],
-  __WEBPACK_IMPORTED_MODULE_1__node_modules_vue_loader_lib_template_compiler_index_id_data_v_dca05c08_hasScoped_false_buble_transforms_node_modules_vue_loader_lib_selector_type_template_index_0_windgram_vue__["a" /* default */],
+  __WEBPACK_IMPORTED_MODULE_1__node_modules_vue_loader_lib_template_compiler_index_id_data_v_3851f7c8_hasScoped_false_buble_transforms_node_modules_vue_loader_lib_selector_type_template_index_0_windgram_vue__["a" /* default */],
   __vue_template_functional__,
   __vue_styles__,
   __vue_scopeId__,
@@ -60229,7 +60231,7 @@ var content = __webpack_require__(345);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(28)("1e62b044", content, true, {});
+var update = __webpack_require__(28)("b297683e", content, true, {});
 
 /***/ }),
 /* 345 */
@@ -60389,13 +60391,6 @@ class WindGramGraph {
         // console.log(chart.zoom_function);
         let init_zoom = __WEBPACK_IMPORTED_MODULE_1_d3__["n" /* zoomIdentity */].translate(0, 0).scale(3);
         chart.canvasChart.call(chart.zoom_function.transform, init_zoom);
-
-        // let start_date = this.x2.range()[0];
-        // console.log(this.x2.range())
-        // console.log(start_date);
-
-        // let end_date = start_date.setDate(start_date + 1)
-
     }
 
     setKey(key) {
