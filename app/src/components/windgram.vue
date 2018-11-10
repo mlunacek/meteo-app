@@ -26,7 +26,7 @@
 
 
             <div id="windgraphid"></div>
-     
+            <div id="windgraphidfocus"></div>
         
 
 
@@ -85,10 +85,20 @@ export default {
 
             let data = this.sounding;
             this.graph = new WindGramGraph("windgraphid");
-            this.graph.config(this.window.height-70, this.window.width-30);
+            this.graph.config(this.window.height/2-50, 
+                              this.window.width-30,
+                              20);
             // this.graph.config(this.window.height-70, 800);
             this.graph.data(data);
             this.graph.draw();
+
+
+            this.graph2 = new WindGramGraph("windgraphidfocus");
+            this.graph2.config(this.window.height/2-50, 
+                              this.window.width-30,
+                              9);
+            this.graph2.data(data);
+            this.graph2.draw();
 
         }
     },
