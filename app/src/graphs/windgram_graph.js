@@ -20,16 +20,17 @@ export class WindGramGraph {
      
         // let defaultHeight = 300;
         // let defaultHeight = 1050;
-        let defaultMargin = {'top': 10, 'left': 40, 'right': 10, 'bottom': 50 };
+        let defaultMargin = {'top': 10, 'left': 40, 'right': 10, 'bottom': 100 };
+        
 
         let outerWidth = defaultWidth
         let outerHeight = d3.min([defaultHeight, 380]);
-        let margin =defaultMargin;
-
-        this.margin = margin; 
+        this.margin =defaultMargin;
+        this.margin2 = {top: 300, right: 20, bottom: 30, left: 40};
+        
         this.width =  outerWidth - this.margin.left - this.margin.right;
         this.height = outerHeight - this.margin.top - this.margin.bottom;
-    
+        this.height2 = outerHeight - this.margin2.top - this.margin2.bottom;
     
         this.svgChart = this.container.append('svg:svg')
                                 .attr('width', outerWidth)
@@ -37,10 +38,19 @@ export class WindGramGraph {
                                 .attr('class', 'svg-block')
                                 .style("z-index", 10);
 
+        this.svgChart.append("defs").append("clipPath")
+                                .attr("id", "clip")
+                                .append("rect")
+                                .attr('width', outerWidth)
+                                .attr("height", outerHeight);
+
         this.svgGroup = this.svgChart.append('g')
                             .attr('transform', `translate(${this.margin.left}, ${this.margin.top})`);
 
-
+        this.svgFocus = this.svgChart.append("g")
+                            .attr("class", "focus")
+                            .attr('transform', `translate(${this.margin2.left}, ${this.margin2.top})`);
+                        
         this.canvasChart = this.container.append('canvas')
                                     .attr('width', this.width)
                                     .attr('height', this.height)
@@ -56,7 +66,9 @@ export class WindGramGraph {
         // Init Scales
         this.x = d3.scaleTime();
         this.y = d3.scaleLinear();
-        
+        this.x2 = d3.scaleTime();
+        this.y2 = d3.scaleLinear();
+
         // this.y = d3.scaleLog();
         // the line graph
         this.line = d3.line()
@@ -70,14 +82,27 @@ export class WindGramGraph {
         // Init Axis
         this.xAxis = d3.axisBottom(this.x);
         this.yAxis = d3.axisLeft(this.y);
+        this.xAxis2 = d3.axisBottom(this.x2);
+        this.yAxis2 = d3.axisLeft(this.y2);
+
         this.transform = d3.zoomIdentity;
     
         this.x.range([0, this.width]).nice();
+        this.x2.range([0, this.width]).nice();
+
         this.y.range([this.height, 0]).nice();
-        
+        this.y2.range([this.height2, 0]).nice();
+
+        this.brush = d3.brushX()
+                    .extent([[0, 0], [this.width, this.height2]])
+                    .on("brush end", this.brushedClosure());
+
         // Add Axis
         this.gxAxis = this.svgGroup.append('g')
             .attr('transform', `translate(0, ${this.height})`);
+            
+        this.gxAxis2 = this.svgFocus.append('g')
+            .attr('transform', `translate(0, ${this.height2})`);
             
 
         this.gyAxis = this.svgGroup.append('g');
@@ -93,6 +118,12 @@ export class WindGramGraph {
             .attr('x', `${this.width/2}`)
             .attr('y', `${this.height + 40}`)
             .text('');
+
+        this.brush_move = this.svgFocus.append("g")
+            .attr("class", "brush")
+            .call(this.brush);
+
+        
 
         let chart = this;
         const zoom_function = d3.zoom().scaleExtent([1, 100])
@@ -161,6 +192,13 @@ export class WindGramGraph {
             chart.tmp[key] = flat;
         });
 
+        // let start_date = this.x2.range()[0];
+        // console.log(this.x2.range())
+        // console.log(start_date);
+
+        // let end_date = start_date.setDate(start_date + 1)
+
+        this.brush_move.call(this.brush.move, [0, 200]);
 
       
     }
@@ -168,6 +206,9 @@ export class WindGramGraph {
     draw(){
 
         let chart = this;
+
+        console.log(this.transform);
+
 
         let key = 'nam';
 
@@ -180,14 +221,24 @@ export class WindGramGraph {
 
         // console.log(chart._y0)
         this.x.domain(chart._x0);
+        this.x2.domain(chart._x0);
+       
         this.y.domain([chart._y0[0],18]);
+        this.y2.domain([chart._y0[0],1]);
 
         this.scaleX = this.transform.rescaleX(this.x);
-        this.scaleY = this.transform.rescaleY(this.y);
+        // this.scaleY = this.transform.rescaleY(this.y);
+        this.scaleY = this.y;
+
+        this.scaleX2 = this.transform.rescaleX(this.x2);
+        // this.scaleY2 = this.transform.rescaleY(this.y2);
+        
 
         this.gxAxis.call(this.xAxis.scale(this.scaleX));
         this.gyAxis.call(this.yAxis.scale(this.scaleY));
-    
+        // this.gxAxis2.call(this.xAxis2.scale(this.scaleX2));
+        this.gxAxis2.call(this.xAxis2);
+
         this.context.clearRect(0, 0, this.width, this.height);
 
         // Draw the lines
@@ -196,17 +247,70 @@ export class WindGramGraph {
         chart._data.forEach(chart.drawPoint, this);
         chart.context.restore();
 
-        console.log(this.y.domain())
+        // this.brush_move.call(this.brush.move, [0, 200]);
 
+
+        // this.brush_move.call(this.brush.move, this.x2.range());
+        // console.log(this.y.domain())
+
+    }
+
+    brushedClosure(){
+        let chart = this;
+        return function(){
+            
+            console.log("brushedClosure");
+
+            if(d3.event.sourceEvent){
+                console.log(d3.event.sourceEvent.type)
+            }
+        
+            if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return; 
+            // console.log(d3.event.sourceEvent.type);
+            var s = d3.event.selection || x2.range();
+            // console.log(s);
+            // console.log(s.map(chart.x2.invert, chart.x2));
+
+            chart.x.domain(s.map(chart.x2.invert, chart.x2));
+            // focus.select(".area").attr("d", area);
+            // focus.select(".axis--x").call(xAxis);
+            let trans = d3.zoomIdentity
+                .scale(chart.width / (s[1] - s[0]))
+                // .scale(1.0)
+                .translate(-s[0], -s[1]);
+
+            let tmp = { 'transform': trans };
+            chart.onZoom(tmp);
+    
+        }
     }
 
     onZoomClosure(){
         let chart = this;
         return function(){
-
+            // console.log(d3.event.sourceEvent.type);
+            if (d3.event.sourceEvent && d3.event.sourceEvent.type === "brush") return;
             // console.log(d3.event.transform)
-            let tmp = { 'transform': d3.event.transform,
-                        'name': chart.name };
+            let tmp = { 'transform': d3.event.transform };
+            // if(chart.transform){
+
+
+
+            //     console.log(d3.event.transform);
+            //     console.log(chart.transform)
+            //     let tx = chart.transform.x - d3.event.transform.x;
+            //     let ty = chart.transform.y - d3.event.transform.y;
+            //     let k = chart.transform.k - d3.event.transform.k;
+
+            //     tmp =  { 'transform': d3.zoomIdentity.translate(tx, ty).scale(k)};
+            // }
+
+            
+
+                
+
+            console.log("onZoomClosure()")
+            console.log(tmp['transform'])
             chart.onZoom(tmp);
         }
     }
@@ -214,14 +318,21 @@ export class WindGramGraph {
     // Default zoom
     onZoom(transform){
         let chart = this;
+        
         let tmp = _.get(transform, 'transform');
+
+        console.log("*********    onZoom    ************")
+        // console.log(tmp);
 
         let tx = Math.min(0, Math.max(tmp.x, chart.width - chart.width * tmp.k));
         let ty = Math.min(0, Math.max(tmp.y, chart.height - chart.height * tmp.k));
 
-        chart.transform = d3.zoomIdentity.translate(tmp.x, tmp.y).scale(tmp.k);
-        chart.transform = d3.zoomIdentity.translate(tx, ty).scale(tmp.k);
+        console.log(tx)
+        console.log(ty)
 
+        chart.transform = d3.zoomIdentity.translate(tmp.x, tmp.y).scale(tmp.k);
+        // chart.transform = d3.zoomIdentity.translate(tx, ty).scale(1.0);
+        // console.log(chart.transform)
         chart.draw();
     }
 

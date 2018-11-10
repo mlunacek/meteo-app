@@ -32921,8 +32921,8 @@ module.exports = function(module) {
 
             let data = this.sounding;
             this.graph = new __WEBPACK_IMPORTED_MODULE_0__graphs_windgram_graph__["a" /* WindGramGraph */]("windgraphid");
-            // this.graph.config(this.window.height-70, this.window.width-30);
-            this.graph.config(this.window.height - 70, 800);
+            this.graph.config(this.window.height - 70, this.window.width - 30);
+            // this.graph.config(this.window.height-70, 800);
             this.graph.data(data);
             this.graph.draw();
         }
@@ -60181,7 +60181,7 @@ var esExports = { render: render, staticRenderFns: staticRenderFns }
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__babel_loader_node_modules_vue_loader_lib_selector_type_script_index_0_windgram_vue__ = __webpack_require__(223);
 /* unused harmony namespace reexport */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__node_modules_vue_loader_lib_template_compiler_index_id_data_v_370db53b_hasScoped_false_buble_transforms_node_modules_vue_loader_lib_selector_type_template_index_0_windgram_vue__ = __webpack_require__(684);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__node_modules_vue_loader_lib_template_compiler_index_id_data_v_473e8676_hasScoped_false_buble_transforms_node_modules_vue_loader_lib_selector_type_template_index_0_windgram_vue__ = __webpack_require__(684);
 function injectStyle (ssrContext) {
   __webpack_require__(344)
 }
@@ -60201,7 +60201,7 @@ var __vue_scopeId__ = null
 var __vue_module_identifier__ = null
 var Component = normalizeComponent(
   __WEBPACK_IMPORTED_MODULE_0__babel_loader_node_modules_vue_loader_lib_selector_type_script_index_0_windgram_vue__["a" /* default */],
-  __WEBPACK_IMPORTED_MODULE_1__node_modules_vue_loader_lib_template_compiler_index_id_data_v_370db53b_hasScoped_false_buble_transforms_node_modules_vue_loader_lib_selector_type_template_index_0_windgram_vue__["a" /* default */],
+  __WEBPACK_IMPORTED_MODULE_1__node_modules_vue_loader_lib_template_compiler_index_id_data_v_473e8676_hasScoped_false_buble_transforms_node_modules_vue_loader_lib_selector_type_template_index_0_windgram_vue__["a" /* default */],
   __vue_template_functional__,
   __vue_styles__,
   __vue_scopeId__,
@@ -60222,7 +60222,7 @@ var content = __webpack_require__(345);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(28)("41f936e4", content, true, {});
+var update = __webpack_require__(28)("769060d6", content, true, {});
 
 /***/ }),
 /* 345 */
@@ -60233,7 +60233,7 @@ exports = module.exports = __webpack_require__(27)(false);
 
 
 // module
-exports.push([module.i, ".svg-block{float:left}.canvas-block{float:left;top:0;left:0}.chart{z-index:-2;opacity:.99;background-color:#fff}.chart,.react-root{float:left;clear:none}.react-root{position:relative}.section{padding:1rem}div.scrollmenu{background-color:#fff;overflow:auto;white-space:nowrap;border:1px solid #d3d3d3}", ""]);
+exports.push([module.i, ".svg-block{float:left}.canvas-block{float:left;top:0;left:0}.chart{z-index:-2;opacity:.99;background-color:#fff}.chart,.react-root{float:left;clear:none}.react-root{position:relative}.section{padding:1rem}div.scrollmenu{background-color:#fff;overflow:auto;white-space:nowrap;border:1px solid #d3d3d3}.zoom{cursor:move;fill:none;pointer-events:all}", ""]);
 
 // exports
 
@@ -60256,7 +60256,7 @@ class WindGramGraph {
 
     constructor(divid) {
 
-        this.container = __WEBPACK_IMPORTED_MODULE_1_d3__["k" /* select */]("#" + divid).append('div').attr("class", "react-root").style("position", "relative");
+        this.container = __WEBPACK_IMPORTED_MODULE_1_d3__["l" /* select */]("#" + divid).append('div').attr("class", "react-root").style("position", "relative");
 
         this.name = divid;
     }
@@ -60265,31 +60265,38 @@ class WindGramGraph {
 
         // let defaultHeight = 300;
         // let defaultHeight = 1050;
-        let defaultMargin = { 'top': 10, 'left': 40, 'right': 10, 'bottom': 50 };
+        let defaultMargin = { 'top': 10, 'left': 40, 'right': 10, 'bottom': 100 };
 
         let outerWidth = defaultWidth;
-        let outerHeight = __WEBPACK_IMPORTED_MODULE_1_d3__["g" /* min */]([defaultHeight, 380]);
-        let margin = defaultMargin;
+        let outerHeight = __WEBPACK_IMPORTED_MODULE_1_d3__["h" /* min */]([defaultHeight, 380]);
+        this.margin = defaultMargin;
+        this.margin2 = { top: 300, right: 20, bottom: 30, left: 40 };
 
-        this.margin = margin;
         this.width = outerWidth - this.margin.left - this.margin.right;
         this.height = outerHeight - this.margin.top - this.margin.bottom;
+        this.height2 = outerHeight - this.margin2.top - this.margin2.bottom;
 
         this.svgChart = this.container.append('svg:svg').attr('width', outerWidth).attr('height', outerHeight).attr('class', 'svg-block').style("z-index", 10);
 
+        this.svgChart.append("defs").append("clipPath").attr("id", "clip").append("rect").attr('width', outerWidth).attr("height", outerHeight);
+
         this.svgGroup = this.svgChart.append('g').attr('transform', `translate(${this.margin.left}, ${this.margin.top})`);
+
+        this.svgFocus = this.svgChart.append("g").attr("class", "focus").attr('transform', `translate(${this.margin2.left}, ${this.margin2.top})`);
 
         this.canvasChart = this.container.append('canvas').attr('width', this.width).attr('height', this.height).style('margin-left', this.margin.left + 'px').style('margin-top', this.margin.top + 'px').style("position", "absolute").style("z-index", 1).attr('class', 'canvas-block');
 
         this.context = this.canvasChart.node().getContext('2d');
 
         // Init Scales
-        this.x = __WEBPACK_IMPORTED_MODULE_1_d3__["j" /* scaleTime */]();
-        this.y = __WEBPACK_IMPORTED_MODULE_1_d3__["h" /* scaleLinear */]();
+        this.x = __WEBPACK_IMPORTED_MODULE_1_d3__["k" /* scaleTime */]();
+        this.y = __WEBPACK_IMPORTED_MODULE_1_d3__["i" /* scaleLinear */]();
+        this.x2 = __WEBPACK_IMPORTED_MODULE_1_d3__["k" /* scaleTime */]();
+        this.y2 = __WEBPACK_IMPORTED_MODULE_1_d3__["i" /* scaleLinear */]();
 
         // this.y = d3.scaleLog();
         // the line graph
-        this.line = __WEBPACK_IMPORTED_MODULE_1_d3__["f" /* line */]().x(function (d) {
+        this.line = __WEBPACK_IMPORTED_MODULE_1_d3__["g" /* line */]().x(function (d) {
             return d.x;
         }).y(function (d) {
             return d.y;
@@ -60301,13 +60308,23 @@ class WindGramGraph {
         // Init Axis
         this.xAxis = __WEBPACK_IMPORTED_MODULE_1_d3__["a" /* axisBottom */](this.x);
         this.yAxis = __WEBPACK_IMPORTED_MODULE_1_d3__["b" /* axisLeft */](this.y);
-        this.transform = __WEBPACK_IMPORTED_MODULE_1_d3__["n" /* zoomIdentity */];
+        this.xAxis2 = __WEBPACK_IMPORTED_MODULE_1_d3__["a" /* axisBottom */](this.x2);
+        this.yAxis2 = __WEBPACK_IMPORTED_MODULE_1_d3__["b" /* axisLeft */](this.y2);
+
+        this.transform = __WEBPACK_IMPORTED_MODULE_1_d3__["o" /* zoomIdentity */];
 
         this.x.range([0, this.width]).nice();
+        this.x2.range([0, this.width]).nice();
+
         this.y.range([this.height, 0]).nice();
+        this.y2.range([this.height2, 0]).nice();
+
+        this.brush = __WEBPACK_IMPORTED_MODULE_1_d3__["c" /* brushX */]().extent([[0, 0], [this.width, this.height2]]).on("brush end", this.brushedClosure());
 
         // Add Axis
         this.gxAxis = this.svgGroup.append('g').attr('transform', `translate(0, ${this.height})`);
+
+        this.gxAxis2 = this.svgFocus.append('g').attr('transform', `translate(0, ${this.height2})`);
 
         this.gyAxis = this.svgGroup.append('g');
 
@@ -60316,8 +60333,10 @@ class WindGramGraph {
 
         this.svgGroup.append('text').attr('x', `${this.width / 2}`).attr('y', `${this.height + 40}`).text('');
 
+        this.brush_move = this.svgFocus.append("g").attr("class", "brush").call(this.brush);
+
         let chart = this;
-        const zoom_function = __WEBPACK_IMPORTED_MODULE_1_d3__["m" /* zoom */]().scaleExtent([1, 100]).on('zoom', chart.onZoomClosure().bind(this));
+        const zoom_function = __WEBPACK_IMPORTED_MODULE_1_d3__["n" /* zoom */]().scaleExtent([1, 100]).on('zoom', chart.onZoomClosure().bind(this));
 
         this.canvasChart.call(zoom_function);
 
@@ -60337,9 +60356,9 @@ class WindGramGraph {
 
         let chart = this;
         chart._keys = __WEBPACK_IMPORTED_MODULE_0_lodash___default.a.keys(data);
-        chart.color_scale = __WEBPACK_IMPORTED_MODULE_1_d3__["i" /* scaleSequential */](__WEBPACK_IMPORTED_MODULE_1_d3__["e" /* interpolateViridis */]).domain([50, 0]);
+        chart.color_scale = __WEBPACK_IMPORTED_MODULE_1_d3__["j" /* scaleSequential */](__WEBPACK_IMPORTED_MODULE_1_d3__["f" /* interpolateViridis */]).domain([50, 0]);
 
-        var parseTime = __WEBPACK_IMPORTED_MODULE_1_d3__["l" /* timeParse */]("%Y-%m-%d %H:%M:%S");
+        var parseTime = __WEBPACK_IMPORTED_MODULE_1_d3__["m" /* timeParse */]("%Y-%m-%d %H:%M:%S");
 
         chart.tmp = {};
         __WEBPACK_IMPORTED_MODULE_0_lodash___default.a.forEach(chart._keys, function (key) {
@@ -60375,11 +60394,21 @@ class WindGramGraph {
             var flat = [].concat.apply([], formatted);
             chart.tmp[key] = flat;
         });
+
+        // let start_date = this.x2.range()[0];
+        // console.log(this.x2.range())
+        // console.log(start_date);
+
+        // let end_date = start_date.setDate(start_date + 1)
+
+        this.brush_move.call(this.brush.move, [0, 200]);
     }
 
     draw() {
 
         let chart = this;
+
+        console.log(this.transform);
 
         let key = 'nam';
 
@@ -60387,18 +60416,28 @@ class WindGramGraph {
         chart._x0_values = __WEBPACK_IMPORTED_MODULE_0_lodash___default.a.map(chart.tmp[key], 'timestamp');
         chart._y0_values = __WEBPACK_IMPORTED_MODULE_0_lodash___default.a.map(chart.tmp[key], 'height');
 
-        chart._x0 = __WEBPACK_IMPORTED_MODULE_1_d3__["d" /* extent */](chart._x0_values);
-        chart._y0 = __WEBPACK_IMPORTED_MODULE_1_d3__["d" /* extent */](chart._y0_values);
+        chart._x0 = __WEBPACK_IMPORTED_MODULE_1_d3__["e" /* extent */](chart._x0_values);
+        chart._y0 = __WEBPACK_IMPORTED_MODULE_1_d3__["e" /* extent */](chart._y0_values);
 
         // console.log(chart._y0)
         this.x.domain(chart._x0);
+        this.x2.domain(chart._x0);
+
         this.y.domain([chart._y0[0], 18]);
+        this.y2.domain([chart._y0[0], 1]);
 
         this.scaleX = this.transform.rescaleX(this.x);
-        this.scaleY = this.transform.rescaleY(this.y);
+        // this.scaleY = this.transform.rescaleY(this.y);
+        this.scaleY = this.y;
+
+        this.scaleX2 = this.transform.rescaleX(this.x2);
+        // this.scaleY2 = this.transform.rescaleY(this.y2);
+
 
         this.gxAxis.call(this.xAxis.scale(this.scaleX));
         this.gyAxis.call(this.yAxis.scale(this.scaleY));
+        // this.gxAxis2.call(this.xAxis2.scale(this.scaleX2));
+        this.gxAxis2.call(this.xAxis2);
 
         this.context.clearRect(0, 0, this.width, this.height);
 
@@ -60408,16 +60447,63 @@ class WindGramGraph {
         chart._data.forEach(chart.drawPoint, this);
         chart.context.restore();
 
-        console.log(this.y.domain());
+        // this.brush_move.call(this.brush.move, [0, 200]);
+
+
+        // this.brush_move.call(this.brush.move, this.x2.range());
+        // console.log(this.y.domain())
+    }
+
+    brushedClosure() {
+        let chart = this;
+        return function () {
+
+            console.log("brushedClosure");
+
+            if (__WEBPACK_IMPORTED_MODULE_1_d3__["d" /* event */].sourceEvent) {
+                console.log(__WEBPACK_IMPORTED_MODULE_1_d3__["d" /* event */].sourceEvent.type);
+            }
+
+            if (__WEBPACK_IMPORTED_MODULE_1_d3__["d" /* event */].sourceEvent && __WEBPACK_IMPORTED_MODULE_1_d3__["d" /* event */].sourceEvent.type === "zoom") return;
+            // console.log(d3.event.sourceEvent.type);
+            var s = __WEBPACK_IMPORTED_MODULE_1_d3__["d" /* event */].selection || x2.range();
+            // console.log(s);
+            // console.log(s.map(chart.x2.invert, chart.x2));
+
+            chart.x.domain(s.map(chart.x2.invert, chart.x2));
+            // focus.select(".area").attr("d", area);
+            // focus.select(".axis--x").call(xAxis);
+            let trans = __WEBPACK_IMPORTED_MODULE_1_d3__["o" /* zoomIdentity */].scale(chart.width / (s[1] - s[0]))
+            // .scale(1.0)
+            .translate(-s[0], -s[1]);
+
+            let tmp = { 'transform': trans };
+            chart.onZoom(tmp);
+        };
     }
 
     onZoomClosure() {
         let chart = this;
         return function () {
-
+            // console.log(d3.event.sourceEvent.type);
+            if (__WEBPACK_IMPORTED_MODULE_1_d3__["d" /* event */].sourceEvent && __WEBPACK_IMPORTED_MODULE_1_d3__["d" /* event */].sourceEvent.type === "brush") return;
             // console.log(d3.event.transform)
-            let tmp = { 'transform': __WEBPACK_IMPORTED_MODULE_1_d3__["c" /* event */].transform,
-                'name': chart.name };
+            let tmp = { 'transform': __WEBPACK_IMPORTED_MODULE_1_d3__["d" /* event */].transform };
+            // if(chart.transform){
+
+
+            //     console.log(d3.event.transform);
+            //     console.log(chart.transform)
+            //     let tx = chart.transform.x - d3.event.transform.x;
+            //     let ty = chart.transform.y - d3.event.transform.y;
+            //     let k = chart.transform.k - d3.event.transform.k;
+
+            //     tmp =  { 'transform': d3.zoomIdentity.translate(tx, ty).scale(k)};
+            // }
+
+
+            console.log("onZoomClosure()");
+            console.log(tmp['transform']);
             chart.onZoom(tmp);
         };
     }
@@ -60425,14 +60511,21 @@ class WindGramGraph {
     // Default zoom
     onZoom(transform) {
         let chart = this;
+
         let tmp = __WEBPACK_IMPORTED_MODULE_0_lodash___default.a.get(transform, 'transform');
+
+        console.log("*********    onZoom    ************");
+        // console.log(tmp);
 
         let tx = Math.min(0, Math.max(tmp.x, chart.width - chart.width * tmp.k));
         let ty = Math.min(0, Math.max(tmp.y, chart.height - chart.height * tmp.k));
 
-        chart.transform = __WEBPACK_IMPORTED_MODULE_1_d3__["n" /* zoomIdentity */].translate(tmp.x, tmp.y).scale(tmp.k);
-        chart.transform = __WEBPACK_IMPORTED_MODULE_1_d3__["n" /* zoomIdentity */].translate(tx, ty).scale(tmp.k);
+        console.log(tx);
+        console.log(ty);
 
+        chart.transform = __WEBPACK_IMPORTED_MODULE_1_d3__["o" /* zoomIdentity */].translate(tmp.x, tmp.y).scale(tmp.k);
+        // chart.transform = d3.zoomIdentity.translate(tx, ty).scale(1.0);
+        // console.log(chart.transform)
         chart.draw();
     }
 
@@ -60509,13 +60602,13 @@ class WindGramGraph {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__dist_package__ = __webpack_require__(348);
 /* unused harmony reexport version */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_d3_array__ = __webpack_require__(5);
-/* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "d", function() { return __WEBPACK_IMPORTED_MODULE_1_d3_array__["d"]; });
-/* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "g", function() { return __WEBPACK_IMPORTED_MODULE_1_d3_array__["g"]; });
+/* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "e", function() { return __WEBPACK_IMPORTED_MODULE_1_d3_array__["d"]; });
+/* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "h", function() { return __WEBPACK_IMPORTED_MODULE_1_d3_array__["g"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_d3_axis__ = __webpack_require__(365);
 /* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "a", function() { return __WEBPACK_IMPORTED_MODULE_2_d3_axis__["a"]; });
 /* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "b", function() { return __WEBPACK_IMPORTED_MODULE_2_d3_axis__["b"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_d3_brush__ = __webpack_require__(369);
-/* unused harmony namespace reexport */
+/* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "c", function() { return __WEBPACK_IMPORTED_MODULE_3_d3_brush__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_d3_chord__ = __webpack_require__(459);
 /* unused harmony namespace reexport */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_d3_collection__ = __webpack_require__(43);
@@ -60553,20 +60646,20 @@ class WindGramGraph {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_21_d3_random__ = __webpack_require__(575);
 /* unused harmony namespace reexport */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_22_d3_scale__ = __webpack_require__(580);
-/* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "h", function() { return __WEBPACK_IMPORTED_MODULE_22_d3_scale__["a"]; });
-/* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "i", function() { return __WEBPACK_IMPORTED_MODULE_22_d3_scale__["b"]; });
-/* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "j", function() { return __WEBPACK_IMPORTED_MODULE_22_d3_scale__["c"]; });
+/* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "i", function() { return __WEBPACK_IMPORTED_MODULE_22_d3_scale__["a"]; });
+/* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "j", function() { return __WEBPACK_IMPORTED_MODULE_22_d3_scale__["b"]; });
+/* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "k", function() { return __WEBPACK_IMPORTED_MODULE_22_d3_scale__["c"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_23_d3_scale_chromatic__ = __webpack_require__(607);
-/* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "e", function() { return __WEBPACK_IMPORTED_MODULE_23_d3_scale_chromatic__["a"]; });
+/* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "f", function() { return __WEBPACK_IMPORTED_MODULE_23_d3_scale_chromatic__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_24_d3_selection__ = __webpack_require__(4);
-/* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "c", function() { return __WEBPACK_IMPORTED_MODULE_24_d3_selection__["b"]; });
-/* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "k", function() { return __WEBPACK_IMPORTED_MODULE_24_d3_selection__["f"]; });
+/* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "d", function() { return __WEBPACK_IMPORTED_MODULE_24_d3_selection__["b"]; });
+/* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "l", function() { return __WEBPACK_IMPORTED_MODULE_24_d3_selection__["f"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_25_d3_shape__ = __webpack_require__(648);
-/* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "f", function() { return __WEBPACK_IMPORTED_MODULE_25_d3_shape__["a"]; });
+/* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "g", function() { return __WEBPACK_IMPORTED_MODULE_25_d3_shape__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_26_d3_time__ = __webpack_require__(50);
 /* unused harmony namespace reexport */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_27_d3_time_format__ = __webpack_require__(86);
-/* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "l", function() { return __WEBPACK_IMPORTED_MODULE_27_d3_time_format__["b"]; });
+/* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "m", function() { return __WEBPACK_IMPORTED_MODULE_27_d3_time_format__["b"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_28_d3_timer__ = __webpack_require__(41);
 /* unused harmony namespace reexport */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_29_d3_transition__ = __webpack_require__(67);
@@ -60574,8 +60667,8 @@ class WindGramGraph {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_30_d3_voronoi__ = __webpack_require__(673);
 /* unused harmony namespace reexport */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_31_d3_zoom__ = __webpack_require__(678);
-/* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "m", function() { return __WEBPACK_IMPORTED_MODULE_31_d3_zoom__["a"]; });
-/* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "n", function() { return __WEBPACK_IMPORTED_MODULE_31_d3_zoom__["b"]; });
+/* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "n", function() { return __WEBPACK_IMPORTED_MODULE_31_d3_zoom__["a"]; });
+/* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "o", function() { return __WEBPACK_IMPORTED_MODULE_31_d3_zoom__["b"]; });
 
 
 
@@ -61298,7 +61391,7 @@ var slice = Array.prototype.slice;
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__brush__ = __webpack_require__(370);
 /* unused harmony reexport brush */
-/* unused harmony reexport brushX */
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return __WEBPACK_IMPORTED_MODULE_0__brush__["a"]; });
 /* unused harmony reexport brushY */
 /* unused harmony reexport brushSelection */
 
@@ -61310,7 +61403,7 @@ var slice = Array.prototype.slice;
 
 "use strict";
 /* unused harmony export brushSelection */
-/* unused harmony export brushX */
+/* harmony export (immutable) */ __webpack_exports__["a"] = brushX;
 /* unused harmony export brushY */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_d3_dispatch__ = __webpack_require__(21);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_d3_drag__ = __webpack_require__(56);
@@ -75079,7 +75172,7 @@ simpleheat.prototype = {
 
 "use strict";
 var render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _vm._m(0)}
-var staticRenderFns = [function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('section',{staticClass:"section"},[_c('div',{staticClass:"modal is-moble"},[_c('div',{staticClass:"modal-background"}),_vm._v(" "),_c('div',{staticClass:"modal-card"},[_c('header',{staticClass:"modal-card-head"},[_c('p',{staticClass:"modal-card-title"},[_vm._v("Configuration")]),_vm._v(" "),_c('button',{staticClass:"delete",attrs:{"aria-label":"close"}})]),_vm._v(" "),_c('section',{staticClass:"modal-card-body"},[_c('div',{staticClass:"field"},[_c('div',{staticClass:"control"},[_c('input',{staticClass:"input is-primary",attrs:{"type":"text","placeholder":"Primary input"}})])])]),_vm._v(" "),_c('footer',{staticClass:"modal-card-foot"},[_c('button',{staticClass:"button is-success"},[_vm._v("Save changes")]),_vm._v(" "),_c('button',{staticClass:"button"},[_vm._v("Cancel")])])])]),_vm._v(" "),_c('div',{staticClass:"scrollmenu"},[_c('div',{attrs:{"id":"windgraphid"}})])])}]
+var staticRenderFns = [function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('section',{staticClass:"section"},[_c('div',{staticClass:"modal is-moble"},[_c('div',{staticClass:"modal-background"}),_vm._v(" "),_c('div',{staticClass:"modal-card"},[_c('header',{staticClass:"modal-card-head"},[_c('p',{staticClass:"modal-card-title"},[_vm._v("Configuration")]),_vm._v(" "),_c('button',{staticClass:"delete",attrs:{"aria-label":"close"}})]),_vm._v(" "),_c('section',{staticClass:"modal-card-body"},[_c('div',{staticClass:"field"},[_c('div',{staticClass:"control"},[_c('input',{staticClass:"input is-primary",attrs:{"type":"text","placeholder":"Primary input"}})])])]),_vm._v(" "),_c('footer',{staticClass:"modal-card-foot"},[_c('button',{staticClass:"button is-success"},[_vm._v("Save changes")]),_vm._v(" "),_c('button',{staticClass:"button"},[_vm._v("Cancel")])])])]),_vm._v(" "),_c('div',{attrs:{"id":"windgraphid"}})])}]
 var esExports = { render: render, staticRenderFns: staticRenderFns }
 /* harmony default export */ __webpack_exports__["a"] = (esExports);
 

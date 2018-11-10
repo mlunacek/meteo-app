@@ -24,9 +24,9 @@
             
             </div>
 
-        <div class="scrollmenu">
+
             <div id="windgraphid"></div>
-        </div>
+     
         
 
 
@@ -85,8 +85,8 @@ export default {
 
             let data = this.sounding;
             this.graph = new WindGramGraph("windgraphid");
-            // this.graph.config(this.window.height-70, this.window.width-30);
-            this.graph.config(this.window.height-70, 800);
+            this.graph.config(this.window.height-70, this.window.width-30);
+            // this.graph.config(this.window.height-70, 800);
             this.graph.data(data);
             this.graph.draw();
 
@@ -144,4 +144,11 @@ div.scrollmenu {
     border-color: lightgrey;
     border-width: 1px;
 }
+
+.zoom {
+  cursor: move;
+  fill: none;
+  pointer-events: all;
+}
+
 </style>
