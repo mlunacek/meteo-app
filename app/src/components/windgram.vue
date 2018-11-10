@@ -90,6 +90,7 @@ export default {
                               20);
             // this.graph.config(this.window.height-70, 800);
             this.graph.data(data);
+            this.graph.setKey('hrrr')
             this.graph.draw();
 
 
@@ -98,6 +99,7 @@ export default {
                               this.window.width-30,
                               9);
             this.graph2.data(data);
+            this.graph2.setKey('hrrr')
             this.graph2.draw();
 
         }

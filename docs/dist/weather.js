@@ -32924,11 +32924,13 @@ module.exports = function(module) {
             this.graph.config(this.window.height / 2 - 50, this.window.width - 30, 20);
             // this.graph.config(this.window.height-70, 800);
             this.graph.data(data);
+            this.graph.setKey('hrrr');
             this.graph.draw();
 
             this.graph2 = new __WEBPACK_IMPORTED_MODULE_0__graphs_windgram_graph__["a" /* WindGramGraph */]("windgraphidfocus");
             this.graph2.config(this.window.height / 2 - 50, this.window.width - 30, 9);
             this.graph2.data(data);
+            this.graph2.setKey('hrrr');
             this.graph2.draw();
         }
     },
@@ -60186,7 +60188,7 @@ var esExports = { render: render, staticRenderFns: staticRenderFns }
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__babel_loader_node_modules_vue_loader_lib_selector_type_script_index_0_windgram_vue__ = __webpack_require__(223);
 /* unused harmony namespace reexport */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__node_modules_vue_loader_lib_template_compiler_index_id_data_v_061bc078_hasScoped_false_buble_transforms_node_modules_vue_loader_lib_selector_type_template_index_0_windgram_vue__ = __webpack_require__(684);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__node_modules_vue_loader_lib_template_compiler_index_id_data_v_dca05c08_hasScoped_false_buble_transforms_node_modules_vue_loader_lib_selector_type_template_index_0_windgram_vue__ = __webpack_require__(684);
 function injectStyle (ssrContext) {
   __webpack_require__(344)
 }
@@ -60206,7 +60208,7 @@ var __vue_scopeId__ = null
 var __vue_module_identifier__ = null
 var Component = normalizeComponent(
   __WEBPACK_IMPORTED_MODULE_0__babel_loader_node_modules_vue_loader_lib_selector_type_script_index_0_windgram_vue__["a" /* default */],
-  __WEBPACK_IMPORTED_MODULE_1__node_modules_vue_loader_lib_template_compiler_index_id_data_v_061bc078_hasScoped_false_buble_transforms_node_modules_vue_loader_lib_selector_type_template_index_0_windgram_vue__["a" /* default */],
+  __WEBPACK_IMPORTED_MODULE_1__node_modules_vue_loader_lib_template_compiler_index_id_data_v_dca05c08_hasScoped_false_buble_transforms_node_modules_vue_loader_lib_selector_type_template_index_0_windgram_vue__["a" /* default */],
   __vue_template_functional__,
   __vue_styles__,
   __vue_scopeId__,
@@ -60227,7 +60229,7 @@ var content = __webpack_require__(345);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(28)("5c88ec43", content, true, {});
+var update = __webpack_require__(28)("1e62b044", content, true, {});
 
 /***/ }),
 /* 345 */
@@ -60396,42 +60398,44 @@ class WindGramGraph {
 
     }
 
+    setKey(key) {
+        this.key = key;
+    }
+
     draw() {
 
         let chart = this;
+        let key = chart.key;
 
-        // console.log(this.transform);
+        if (key) {
 
+            chart._data = chart.tmp[key];
+            chart._x0_values = __WEBPACK_IMPORTED_MODULE_0_lodash___default.a.map(chart.tmp[key], 'timestamp');
+            chart._y0_values = __WEBPACK_IMPORTED_MODULE_0_lodash___default.a.map(chart.tmp[key], 'height');
 
-        let key = 'nam';
+            chart._x0 = __WEBPACK_IMPORTED_MODULE_1_d3__["d" /* extent */](chart._x0_values);
+            chart._y0 = __WEBPACK_IMPORTED_MODULE_1_d3__["d" /* extent */](chart._y0_values);
 
-        chart._data = chart.tmp[key];
-        chart._x0_values = __WEBPACK_IMPORTED_MODULE_0_lodash___default.a.map(chart.tmp[key], 'timestamp');
-        chart._y0_values = __WEBPACK_IMPORTED_MODULE_0_lodash___default.a.map(chart.tmp[key], 'height');
+            // console.log(chart._y0)
+            this.x.domain(chart._x0);
+            this.y.domain([chart._y0[0], chart.max_y]);
 
-        chart._x0 = __WEBPACK_IMPORTED_MODULE_1_d3__["d" /* extent */](chart._x0_values);
-        chart._y0 = __WEBPACK_IMPORTED_MODULE_1_d3__["d" /* extent */](chart._y0_values);
+            this.scaleX = this.transform.rescaleX(this.x);
+            this.scaleY = this.transform.rescaleY(this.y);
+            this.scaleY = this.y;
+            // this.scaleX = this.x;
 
-        // console.log(chart._y0)
-        this.x.domain(chart._x0);
-        this.y.domain([chart._y0[0], chart.max_y]);
+            this.gxAxis.call(this.xAxis.scale(this.scaleX));
+            this.gyAxis.call(this.yAxis.scale(this.scaleY));
 
-        this.scaleX = this.transform.rescaleX(this.x);
-        this.scaleY = this.transform.rescaleY(this.y);
-        this.scaleY = this.y;
-        // this.scaleX = this.x;
+            this.context.clearRect(0, 0, this.width, this.height);
 
-        this.gxAxis.call(this.xAxis.scale(this.scaleX));
-        this.gyAxis.call(this.yAxis.scale(this.scaleY));
-
-        this.context.clearRect(0, 0, this.width, this.height);
-
-        // Draw the lines
-        chart.context.save();
-        // sort the data so that colored and sizes are on top?
-        chart._data.forEach(chart.drawPoint, this);
-        chart.context.restore();
-
+            // Draw the lines
+            chart.context.save();
+            // sort the data so that colored and sizes are on top?
+            chart._data.forEach(chart.drawPoint, this);
+            chart.context.restore();
+        }
         // this.brush_move.call(this.brush.move, [0, 200]);
 
 

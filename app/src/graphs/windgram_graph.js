@@ -183,43 +183,46 @@ export class WindGramGraph {
       
       
     }
+    
+    setKey(key){
+        this.key = key;
+    }
         
     draw(){
 
         let chart = this;
-
-        // console.log(this.transform);
-
-
-        let key = 'nam';
-
-        chart._data = chart.tmp[key];
-        chart._x0_values = _.map(chart.tmp[key], 'timestamp');
-        chart._y0_values = _.map(chart.tmp[key], 'height');
-
-        chart._x0 = d3.extent(chart._x0_values);
-        chart._y0 = d3.extent(chart._y0_values);
-
-        // console.log(chart._y0)
-        this.x.domain(chart._x0);
-        this.y.domain([chart._y0[0], chart.max_y]);
+        let key = chart.key;
         
-        this.scaleX = this.transform.rescaleX(this.x);
-        this.scaleY = this.transform.rescaleY(this.y);
-        this.scaleY = this.y;
-        // this.scaleX = this.x;
+        if(key){
+        
+            chart._data = chart.tmp[key];
+            chart._x0_values = _.map(chart.tmp[key], 'timestamp');
+            chart._y0_values = _.map(chart.tmp[key], 'height');
 
-        this.gxAxis.call(this.xAxis.scale(this.scaleX));
-        this.gyAxis.call(this.yAxis.scale(this.scaleY));
-   
-        this.context.clearRect(0, 0, this.width, this.height);
+            chart._x0 = d3.extent(chart._x0_values);
+            chart._y0 = d3.extent(chart._y0_values);
 
-        // Draw the lines
-        chart.context.save();
-        // sort the data so that colored and sizes are on top?
-        chart._data.forEach(chart.drawPoint, this);
-        chart.context.restore();
+            // console.log(chart._y0)
+            this.x.domain(chart._x0);
+            this.y.domain([chart._y0[0], chart.max_y]);
+            
+            this.scaleX = this.transform.rescaleX(this.x);
+            this.scaleY = this.transform.rescaleY(this.y);
+            this.scaleY = this.y;
+            // this.scaleX = this.x;
 
+            this.gxAxis.call(this.xAxis.scale(this.scaleX));
+            this.gyAxis.call(this.yAxis.scale(this.scaleY));
+    
+            this.context.clearRect(0, 0, this.width, this.height);
+
+            // Draw the lines
+            chart.context.save();
+            // sort the data so that colored and sizes are on top?
+            chart._data.forEach(chart.drawPoint, this);
+            chart.context.restore();
+
+        }
         // this.brush_move.call(this.brush.move, [0, 200]);
 
 
