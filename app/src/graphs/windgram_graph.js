@@ -20,7 +20,7 @@ export class WindGramGraph {
      
         // let defaultHeight = 300;
         // let defaultHeight = 1050;
-        let defaultMargin = {'top': 10, 'left': 20, 'right': 10, 'bottom': 40 };
+        let defaultMargin = {'top': 10, 'left': 30, 'right': 10, 'bottom': 40 };
         
         this.max_y = max_y
         let outerWidth = defaultWidth
@@ -61,9 +61,10 @@ export class WindGramGraph {
 
         // Init Scales
         this.x = d3.scaleTime();
-        this.y = d3.scaleLinear();
+        // this.y = d3.scaleLinear();
+        this.y = d3.scaleLog()
+        // this.y.tickFormat(d3.format(",.0f"));
 
-        // this.y = d3.scaleLog();
         // the line graph
         this.line = d3.line()
                     .x(function(d) { return d.x; })
@@ -76,6 +77,9 @@ export class WindGramGraph {
         // Init Axis
         this.xAxis = d3.axisBottom(this.x);
         this.yAxis = d3.axisLeft(this.y);
+        
+        this.yAxis.tickValues([5,6,8,10,12,14,16,18,20]);
+        this.yAxis.tickFormat(d3.format(",.0f"));
     
         this.transform = d3.zoomIdentity;
     
@@ -142,13 +146,17 @@ export class WindGramGraph {
             // console.log(data[key])
             let previous = undefined;
             let previous_height = undefined;
-
+            let minutes_between = 0;
+            let start_time = parseTime(data[key][0]['timestamp']);
+            let end_time = parseTime(data[key][  data[key].length-1 ]['timestamp']);
             let formatted = _.map(data[key], function(item){
                 
                 let timestamp = parseTime(item['timestamp']);
+                
                 let values = _.map( item['forecasts']['data'], function(x){
                 
                     let feet = (x[9]/1000.)*3.28
+                    // feet = x[9];
                     let tmp = {'timestamp': timestamp,
                                 'previous': previous,
                                 'height': feet,
@@ -158,27 +166,57 @@ export class WindGramGraph {
                     return tmp
                 });
 
+
+                minutes_between = (timestamp-previous)
+
                 previous = timestamp;
+
+    
                 // return values;
                 return _.filter(values, function(d){
                     return d['height'] < chart.max_y + 2;
                 })
             });
 
+            // console.log(chart.tmp[chart.key]['start_time'])
+            // console.log(chart.tmp[chart.key]['end_time'])
+            // console.log(chart.tmp[chart.key]['minutes_between'])
+
+            let periods = (end_time - start_time)/minutes_between;
+            let scale = periods/12;
+
             // console.log(formatted);
             var flat = [].concat.apply([], formatted);
-            chart.tmp[key] = flat;
+            chart.tmp[key] = {'data': flat,
+                              'scale': scale,
+                              'minutes_between': minutes_between,
+                              'start_time': start_time,
+                              'end_time': end_time
+                            };
+            
+            console.log(minutes_between)
+
         });
 
-        // console.log(chart.zoom_function);
-        let init_zoom = d3.zoomIdentity.translate(0, 0).scale(3);
-        chart.canvasChart.call(chart.zoom_function.transform,  init_zoom );
+        // console.log(chart.key)
+        // // console.log(chart.zoom_function);
+        // console.log(chart.tmp[chart.key]['start_time'])
+        // console.log(chart.tmp[chart.key]['end_time'])
+        // console.log(chart.tmp[chart.key]['minutes_between'])
 
-          
+        // let init_zoom = d3.zoomIdentity.translate(0, 0).scale(3);
+        // chart.canvasChart.call(chart.zoom_function.transform,  init_zoom );
+
+        // console.log(chart._keys);
+
+        
     }
     
     setKey(key){
+        let chart = this;
         this.key = key;
+        let init_zoom = d3.zoomIdentity.translate(0, 0).scale(chart.tmp[chart.key]['scale']);
+        chart.canvasChart.call(chart.zoom_function.transform,  init_zoom );
     }
     
     
@@ -189,9 +227,11 @@ export class WindGramGraph {
         
         if(key){
         
-            chart._data = chart.tmp[key];
-            chart._x0_values = _.map(chart.tmp[key], 'timestamp');
-            chart._y0_values = _.map(chart.tmp[key], 'height');
+            console.log(chart.tmp[key])
+
+            chart._data = chart.tmp[key]['data'];
+            chart._x0_values = _.map(chart._data, 'timestamp');
+            chart._y0_values = _.map(chart._data, 'height');
 
             chart._x0 = d3.extent(chart._x0_values);
             chart._y0 = d3.extent(chart._y0_values);
@@ -206,7 +246,9 @@ export class WindGramGraph {
             // this.scaleX = this.x;
 
             this.gxAxis.call(this.xAxis.scale(this.scaleX));
-            this.gyAxis.call(this.yAxis.scale(this.scaleY));
+            this.gyAxis.call(this.yAxis.scale(this.scaleY))
+            // .tickFormat(d3.format(".0s")));
+    
     
             this.context.clearRect(0, 0, this.width, this.height);
 
@@ -215,6 +257,9 @@ export class WindGramGraph {
             // sort the data so that colored and sizes are on top?
             chart._data.forEach(chart.drawPoint, this);
             chart.context.restore();
+
+
+
 
         }
         // this.brush_move.call(this.brush.move, [0, 200]);
@@ -241,12 +286,17 @@ export class WindGramGraph {
         let chart = this;
         
         let tmp = _.get(transform, 'transform');
-     
-        let tx = Math.min(0, Math.max(tmp.x, chart.width - chart.width * tmp.k));
-        let ty = Math.min(0, Math.max(tmp.y, chart.height - chart.height * tmp.k));
+        
+        // min scale
+        let k = Math.min(chart.tmp[chart.key]['scale'], tmp.k);
 
 
-        chart.transform = d3.zoomIdentity.translate(tx, ty).scale(tmp.k);
+        let tx = Math.min(0, Math.max(tmp.x, chart.width - chart.width * k));
+        let ty = Math.min(0, Math.max(tmp.y, chart.height - chart.height * k));
+
+
+
+        chart.transform = d3.zoomIdentity.translate(tx, ty).scale(k);
         chart.draw();
     }
 

@@ -35,12 +35,13 @@ export default {
 
   created() {
 
-      this.initial_state = this.$store.state;
+      this.initial_state = this.$store.state.initial_state;
 
       // Check to see if anything is saved?
       var obj = JSON.parse(window.localStorage.getItem('store'));
-      // console.log(obj)
+      console.log(obj)
       if( obj && obj !== 'null' && obj !== 'undefined'){
+          obj['initial_state'] = this.initial_state;
           this.$store.replaceState(obj);
       }
 

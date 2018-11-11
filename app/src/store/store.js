@@ -5,13 +5,19 @@ Vue.use(Vuex);
 
 export default function makeStore(initialState){
 
-    console.log(initialState);
+    
+    console.log(JSON.stringify(initialState));
 
     return new Vuex.Store({
         
         state: {
             'initial_state': initialState,
             'soundings': {},
+            'current_state': {
+                'page': 'windgram',
+                'location': 'broomfield',
+                'model': 'nam',
+            },
         },
 
         mutations: {
@@ -23,7 +29,16 @@ export default function makeStore(initialState){
         },
         
         getters: {
-
+            get_location: (state ) => {
+                return (keyword) => {
+                    return state.initial_state.soundings[keyword];
+                }
+            },
+            get_sounding: (state ) => {
+                return (keyword) => {
+                    return state.soundings[keyword];
+                }
+            }
         },
 
         actions: {

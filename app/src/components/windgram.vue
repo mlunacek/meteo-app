@@ -1,28 +1,41 @@
 <template>
-     <section class="section">
+     <section class="">
+    <div>
+        <div class="tabs">
+            <ul>
+            <router-link to="/" tag="li" active-class='is-active' exact><a><icon-base view-box="0 0 100 100"><icon-home/></icon-base></a></router-link>
+            <router-link to="/" tag="li" active-class='is-active' exact><a>sounding</a></router-link>
 
-            <div class="modal is-moble">
-            <div class="modal-background"></div>
-            
-            <div class="modal-card">
-                <header class="modal-card-head">
-                <p class="modal-card-title">Configuration</p>
-                <button class="delete" aria-label="close"></button>
-                </header>
-                <section class="modal-card-body">
-                <div class="field">
-                    <div class="control">
-                        <input class="input is-primary" type="text" placeholder="Primary input">
-                    </div>
-                </div>
-                </section>
-                <footer class="modal-card-foot">
-                <button class="button is-success">Save changes</button>
-                <button class="button">Cancel</button>
-                </footer>
-            </div>
-            
-            </div>
+            <!-- <span> <strong>{{name}}</strong> </span> -->
+            <li v-bind:class="{ 'is-active': isActive('nam') }" v-on:click="changeModel"><a>nam</a></li>
+            <li v-bind:class="{ 'is-active': isActive('hrrr') }" v-on:click="changeModel"><a>hrrr</a></li>
+            <li  v-on:click="toggleModal"> <a><icon-base view-box="0 0 50 50"><icon-config/></icon-base></a></li>
+            </ul>
+        
+        </div>
+    </div>
+
+
+    <div  v-bind:class="{ 'is-active': isModalActive() }" class="modal">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+        <header class="modal-card-head">
+        <p class="modal-card-title">Configuration</p>
+        <button class="delete" aria-label="close" v-on:click="toggleModal"></button>
+        </header>
+        <section class="modal-card-body">
+        
+
+
+
+
+        </section>
+        <footer class="modal-card-foot">
+        <button class="button is-success">Save changes</button>
+        <button class="button" v-on:click="toggleModal">Cancel</button>
+        </footer>
+    </div>
+    </div>
 
 
             <div id="windgraphid"></div>
@@ -36,15 +49,26 @@
 <script>
 
 import {WindGramGraph} from '../graphs/windgram_graph';
+import IconBase from './icons/IconBase.vue'
+import IconHome from './icons/IconHome.vue'
+import IconConfig from './icons/IconConfig.vue'
 
 export default {
+
+  components: {
+    IconBase,
+    IconHome,
+    IconConfig,
+  },
+
 
     data() {
         return {
         'window': {
             'width': 0,
             'height': 0,
-         }
+         },
+        'modal': false,
         }
     },
 
@@ -57,7 +81,7 @@ export default {
       
     mounted() {
 
-        console.log("mounted")
+
         this.$store.dispatch("fetchSounding", { url: this.url, 
                                                 id: this.$route.params.id,
                                                 callback: this.onData })   
@@ -68,16 +92,37 @@ export default {
     },
 
     methods:{
+        
+        toggleModal(){
+            this.modal = !this.modal
+            console.log(this.isModalActive())
+            
+        },
+        
+        isModalActive(){
+            return this.modal;
+        },
+
+        changeModel(event){
+            this.$store.state.initial_state.soundings[this.$route.params.id]['model'] = event.target.innerText;
+            this.graph.setKey(this.model)
+            this.graph.draw();
+        },
+
+        isActive(key){
+            return key === this.model;
+        },
+
 
         handleResize() {
             this.window.width = window.innerWidth;
             this.window.height = window.innerHeight;
             
-            this.graph.config(this.window.height-50, 
-                              this.window.width-20,
-                              20);   
-            this.graph.setKey('nam')      
-            this.graph.draw();
+            // this.graph.config(this.window.height-50, 
+            //                   this.window.width-20,
+            //                   20);   
+            // this.graph.setKey('hrrr')      
+            // this.graph.draw();
         },
 
         onData() {
@@ -86,6 +131,8 @@ export default {
 
         load_graph(){
 
+            console.log(this.model)
+
             let data = this.sounding;
             this.graph = new WindGramGraph("windgraphid");
             this.graph.config(this.window.height-50, 
@@ -93,7 +140,7 @@ export default {
                               20);
             // this.graph.config(this.window.height-70, 800);
             this.graph.data(data);
-            this.graph.setKey('nam')
+            this.graph.setKey(this.model)
             this.graph.draw();
 
 
@@ -109,13 +156,23 @@ export default {
     },
     
     computed: {
+        location(){
+            return this.$store.getters.get_location(this.$route.params.id);
+        },
         url(){
-            return this.$store.state.initial_state.soundings[this.$route.params.id]['url']
+            return this.location['url']
+        },
+        model(){
+            return this.location['model']
         },
         sounding(){
-            return this.$store.state.soundings[this.$route.params.id];
+            return this.$store.getters.get_sounding(this.$route.params.id);
+        },
+        name(){
+            return this.$route.params.id;
         }
-
+        
+     
      }
 
 }

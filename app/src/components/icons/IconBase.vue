@@ -2,7 +2,7 @@
   <svg xmlns="http://www.w3.org/2000/svg"
     :width="width"
     :height="height"
-    viewBox="0 0 100 125"
+    :viewBox="viewBox"
     :aria-labelledby="iconName"
     role="presentation"
   >
@@ -24,6 +24,10 @@ export default {
       type: String,
       default: 'box'
     },
+    viewBox:{
+      type: String,
+      default: "0 0 52 65"
+    },
     width: {
       type: [Number, String],
       default: 24
@@ -44,6 +48,6 @@ export default {
 svg {
   display: inline-block;
   vertical-align: baseline;
-  margin-bottom: -2px; /* yes, I'm that particular about formatting */
+  /* margin-bottom: -2px; yes, I'm that particular about formatting */
 }
 </style>
