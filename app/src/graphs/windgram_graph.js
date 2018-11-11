@@ -36,6 +36,12 @@ export class WindGramGraph {
                                 .attr('class', 'svg-block')
                                 .style("z-index", 10);
 
+        // this.svgChart.append("rect")
+        //                         .attr("width", 300)
+        //                         .attr("height", 20)
+        //                         .style("fill", "url(#linear-gradient)");
+            
+
         this.rect = this.svgChart.append("defs").append("clipPath")
                                 .attr("id", "clip")
                                 .append("rect")
@@ -69,7 +75,7 @@ export class WindGramGraph {
                       
 
         this.context = this.canvasChart.node().getContext('2d');
-
+        this.thresholdWind = 100
         // Init Scales
         this.x = d3.scaleTime();
         // this.y = d3.scaleLinear();
@@ -143,7 +149,11 @@ export class WindGramGraph {
  
         let chart = this;
         chart._keys = _.keys(data);
-        chart.color_scale = d3.scaleSequential(d3.interpolateViridis).domain([50,0]);
+        
+        chart.color_scale = d3.scaleSequential(d3.interpolateViridis).domain([40,0]);
+        // chart.color_scale = d3.scaleSequential(d3.interpolateCool).domain([40,0]);
+        // chart.color_scale = d3.scaleSequential(d3.interpolateInferno).domain([50,0]);
+
 
         var parseTime = d3.timeParse("%Y-%m-%d %H:%M:%S");
 
@@ -216,6 +226,17 @@ export class WindGramGraph {
         chart.svgChart.call(chart.zoom_function.transform,  init_zoom );
     }
     
+    setThreshold(threshold){
+        console.log(threshold);
+
+        if(threshold){
+            this.thresholdWind = 15;
+        }
+        else{
+            this.thresholdWind = 100;
+        }
+        console.log(this.thresholdWind)
+    }
     
     draw(){
 
@@ -269,19 +290,16 @@ export class WindGramGraph {
                     .attr("x2", chart.scaleX(today))  //<<== and here
                     .attr("y2", chart.height )
             
-            this.box
-                .attr("x", chart.scaleX(today))  //<<== change your code here
-                .attr("y", 0)
-                .attr("width", 50)  //<<== and here
-                .attr("height", chart.height )
+      
+            // this.box
+            //     .attr("x", chart.scaleX(today)) 
+            //     .attr("y", 0)
+            //     .attr("width", 50) 
+            //     .attr("height", chart.height )
 
 
         }
-        // this.brush_move.call(this.brush.move, [0, 200]);
-
-
-        // this.brush_move.call(this.brush.move, this.x2.range());
-        // console.log(this.y.domain())
+       
 
     }
 
@@ -316,11 +334,7 @@ export class WindGramGraph {
     }
 
 
-    getSpeedColor(speed){
-        // if( speed > 15){
-        //     return `rgb(0,199,255)`;
-        // }
-     
+    getSpeedColor(speed){  
         return this.color_scale(speed);
 
         if(speed < 0){
@@ -347,10 +361,44 @@ export class WindGramGraph {
         return "rgb(30,35,120)";
     }
 
+    getSimpleThresholdColor(speed){
+
+        // console.log(this.thresholdWind)
+        if(speed < this.thresholdWind){
+            return this.color_scale(speed);
+        }
+        return "grey"
+
+        if( speed < 5){
+            return `rgb(37,74,255)`;
+        }
+        if( speed < 10){
+            return `rgb(0,124,255)`;
+        }
+        else if( speed < 15){
+            return `rgb(14,198,204)`;
+        }
+        else if( speed < 20){
+            return `rgb(0,235,0)`;
+        }
+        else if( speed < 25){
+            return `rgb(255,187,0)`;
+        }
+        else if( speed < 30){
+            return `rgb(200,0,74)`;
+        }
+        else if( speed < 35){
+            return `rgb(139,0,74)`;
+        }
+        return "rgb(100,0,74)";
+    }
+
+
     drawPoint(point){
 
         let chart = this;
-        let col = chart.getSpeedColor(point['speed']);
+        // let col = chart.getSpeedColor(point['speed']);
+        let col = chart.getSimpleThresholdColor(point['speed']);
 
         // console.log(point['speed']);
 

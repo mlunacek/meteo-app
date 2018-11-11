@@ -32963,6 +32963,21 @@ module.exports = function(module) {
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -32984,7 +32999,9 @@ module.exports = function(module) {
                 'width': 0,
                 'height': 0
             },
-            'modal': false
+            'modal': false,
+            'nightOverlay': false,
+            'thresholdWind': false
         };
     },
 
@@ -33004,10 +33021,15 @@ module.exports = function(module) {
     },
 
     methods: {
-
+        save() {
+            console.log("save");
+        },
         toggleModal() {
             this.modal = !this.modal;
-            console.log(this.isModalActive());
+            // console.log(this.isModalActive())
+            console.log(this.thresholdWind);
+            this.graph.setThreshold(this.thresholdWind);
+            this.graph.draw();
         },
 
         isModalActive() {
@@ -33041,7 +33063,7 @@ module.exports = function(module) {
 
         load_graph() {
 
-            console.log(this.model);
+            // console.log(this.model)
 
             let data = this.sounding;
             this.graph = new __WEBPACK_IMPORTED_MODULE_0__graphs_windgram_graph__["a" /* WindGramGraph */]("windgraphid");
@@ -33049,6 +33071,7 @@ module.exports = function(module) {
             // this.graph.config(this.window.height-70, 800);
             this.graph.data(data);
             this.graph.setKey(this.model);
+            // this.graph.setThreshold(this.thresholdWind)
             this.graph.draw();
 
             // this.graph2 = new WindGramGraph("windgraphidfocus");
@@ -60255,7 +60278,7 @@ var esExports = { render: render, staticRenderFns: staticRenderFns }
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__babel_loader_node_modules_vue_loader_lib_selector_type_script_index_0_windgram_vue__ = __webpack_require__(225);
 /* unused harmony namespace reexport */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__node_modules_vue_loader_lib_template_compiler_index_id_data_v_41d98d51_hasScoped_false_buble_transforms_node_modules_vue_loader_lib_selector_type_template_index_0_windgram_vue__ = __webpack_require__(685);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__node_modules_vue_loader_lib_template_compiler_index_id_data_v_7340fb75_hasScoped_false_buble_transforms_node_modules_vue_loader_lib_selector_type_template_index_0_windgram_vue__ = __webpack_require__(685);
 function injectStyle (ssrContext) {
   __webpack_require__(344)
 }
@@ -60275,7 +60298,7 @@ var __vue_scopeId__ = null
 var __vue_module_identifier__ = null
 var Component = normalizeComponent(
   __WEBPACK_IMPORTED_MODULE_0__babel_loader_node_modules_vue_loader_lib_selector_type_script_index_0_windgram_vue__["a" /* default */],
-  __WEBPACK_IMPORTED_MODULE_1__node_modules_vue_loader_lib_template_compiler_index_id_data_v_41d98d51_hasScoped_false_buble_transforms_node_modules_vue_loader_lib_selector_type_template_index_0_windgram_vue__["a" /* default */],
+  __WEBPACK_IMPORTED_MODULE_1__node_modules_vue_loader_lib_template_compiler_index_id_data_v_7340fb75_hasScoped_false_buble_transforms_node_modules_vue_loader_lib_selector_type_template_index_0_windgram_vue__["a" /* default */],
   __vue_template_functional__,
   __vue_styles__,
   __vue_scopeId__,
@@ -60296,7 +60319,7 @@ var content = __webpack_require__(345);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(28)("bfe11ea4", content, true, {});
+var update = __webpack_require__(28)("5f9cd3d4", content, true, {});
 
 /***/ }),
 /* 345 */
@@ -60349,6 +60372,12 @@ class WindGramGraph {
 
         this.svgChart = this.container.append('svg:svg').attr('width', outerWidth).attr('height', outerHeight).attr('class', 'svg-block').style("z-index", 10);
 
+        // this.svgChart.append("rect")
+        //                         .attr("width", 300)
+        //                         .attr("height", 20)
+        //                         .style("fill", "url(#linear-gradient)");
+
+
         this.rect = this.svgChart.append("defs").append("clipPath").attr("id", "clip").append("rect").attr('width', outerWidth).attr("height", outerHeight);
 
         this.svgGroup = this.svgChart.append('g').attr('transform', `translate(${this.margin.left}, ${this.margin.top})`);
@@ -60360,7 +60389,7 @@ class WindGramGraph {
         this.box = this.svgGroup.append("rect").attr("clip-path", "url(#clip)").style("stroke-width", 1).style("fill", "grey").style("opacity", 0.9);
 
         this.context = this.canvasChart.node().getContext('2d');
-
+        this.thresholdWind = 100;
         // Init Scales
         this.x = __WEBPACK_IMPORTED_MODULE_1_d3__["j" /* scaleTime */]();
         // this.y = d3.scaleLinear();
@@ -60416,7 +60445,11 @@ class WindGramGraph {
 
         let chart = this;
         chart._keys = __WEBPACK_IMPORTED_MODULE_0_lodash___default.a.keys(data);
-        chart.color_scale = __WEBPACK_IMPORTED_MODULE_1_d3__["i" /* scaleSequential */](__WEBPACK_IMPORTED_MODULE_1_d3__["f" /* interpolateViridis */]).domain([50, 0]);
+
+        chart.color_scale = __WEBPACK_IMPORTED_MODULE_1_d3__["i" /* scaleSequential */](__WEBPACK_IMPORTED_MODULE_1_d3__["f" /* interpolateViridis */]).domain([40, 0]);
+        // chart.color_scale = d3.scaleSequential(d3.interpolateCool).domain([40,0]);
+        // chart.color_scale = d3.scaleSequential(d3.interpolateInferno).domain([50,0]);
+
 
         var parseTime = __WEBPACK_IMPORTED_MODULE_1_d3__["l" /* timeParse */]("%Y-%m-%d %H:%M:%S");
 
@@ -60486,6 +60519,17 @@ class WindGramGraph {
         chart.svgChart.call(chart.zoom_function.transform, init_zoom);
     }
 
+    setThreshold(threshold) {
+        console.log(threshold);
+
+        if (threshold) {
+            this.thresholdWind = 15;
+        } else {
+            this.thresholdWind = 100;
+        }
+        console.log(this.thresholdWind);
+    }
+
     draw() {
 
         let chart = this;
@@ -60535,15 +60579,13 @@ class WindGramGraph {
             .attr("y1", 0).attr("x2", chart.scaleX(today)) //<<== and here
             .attr("y2", chart.height);
 
-            this.box.attr("x", chart.scaleX(today)) //<<== change your code here
-            .attr("y", 0).attr("width", 50) //<<== and here
-            .attr("height", chart.height);
+            // this.box
+            //     .attr("x", chart.scaleX(today)) 
+            //     .attr("y", 0)
+            //     .attr("width", 50) 
+            //     .attr("height", chart.height )
+
         }
-        // this.brush_move.call(this.brush.move, [0, 200]);
-
-
-        // this.brush_move.call(this.brush.move, this.x2.range());
-        // console.log(this.y.domain())
     }
 
     onZoomClosure() {
@@ -60574,10 +60616,6 @@ class WindGramGraph {
     }
 
     getSpeedColor(speed) {
-        // if( speed > 15){
-        //     return `rgb(0,199,255)`;
-        // }
-
         return this.color_scale(speed);
 
         if (speed < 0) {
@@ -60598,10 +60636,38 @@ class WindGramGraph {
         return "rgb(30,35,120)";
     }
 
+    getSimpleThresholdColor(speed) {
+
+        // console.log(this.thresholdWind)
+        if (speed < this.thresholdWind) {
+            return this.color_scale(speed);
+        }
+        return "grey";
+
+        if (speed < 5) {
+            return `rgb(37,74,255)`;
+        }
+        if (speed < 10) {
+            return `rgb(0,124,255)`;
+        } else if (speed < 15) {
+            return `rgb(14,198,204)`;
+        } else if (speed < 20) {
+            return `rgb(0,235,0)`;
+        } else if (speed < 25) {
+            return `rgb(255,187,0)`;
+        } else if (speed < 30) {
+            return `rgb(200,0,74)`;
+        } else if (speed < 35) {
+            return `rgb(139,0,74)`;
+        }
+        return "rgb(100,0,74)";
+    }
+
     drawPoint(point) {
 
         let chart = this;
-        let col = chart.getSpeedColor(point['speed']);
+        // let col = chart.getSpeedColor(point['speed']);
+        let col = chart.getSimpleThresholdColor(point['speed']);
 
         // console.log(point['speed']);
 
@@ -75109,8 +75175,8 @@ var esExports = { render: render, staticRenderFns: staticRenderFns }
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-var render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('section',{},[_c('div',[_c('div',{staticClass:"tabs"},[_c('ul',[_c('router-link',{attrs:{"to":"/","tag":"li","active-class":"is-active","exact":""}},[_c('a',[_c('icon-base',{attrs:{"view-box":"0 0 100 100"}},[_c('icon-home')],1)],1)]),_vm._v(" "),_c('router-link',{attrs:{"to":"/","tag":"li","active-class":"is-active","exact":""}},[_c('a',[_vm._v("sounding")])]),_vm._v(" "),_c('li',{class:{ 'is-active': _vm.isActive('nam') },on:{"click":_vm.changeModel}},[_c('a',[_vm._v("nam")])]),_vm._v(" "),_c('li',{class:{ 'is-active': _vm.isActive('hrrr') },on:{"click":_vm.changeModel}},[_c('a',[_vm._v("hrrr")])]),_vm._v(" "),_c('li',{on:{"click":_vm.toggleModal}},[_c('a',[_c('icon-base',{attrs:{"view-box":"0 0 50 50"}},[_c('icon-config')],1)],1)])],1)])]),_vm._v(" "),_c('div',{staticClass:"modal",class:{ 'is-active': _vm.isModalActive() }},[_c('div',{staticClass:"modal-background"}),_vm._v(" "),_c('div',{staticClass:"modal-card"},[_c('header',{staticClass:"modal-card-head"},[_c('p',{staticClass:"modal-card-title"},[_vm._v("Configuration")]),_vm._v(" "),_c('button',{staticClass:"delete",attrs:{"aria-label":"close"},on:{"click":_vm.toggleModal}})]),_vm._v(" "),_c('section',{staticClass:"modal-card-body"}),_vm._v(" "),_c('footer',{staticClass:"modal-card-foot"},[_c('button',{staticClass:"button is-success"},[_vm._v("Save changes")]),_vm._v(" "),_c('button',{staticClass:"button",on:{"click":_vm.toggleModal}},[_vm._v("Cancel")])])])]),_vm._v(" "),_c('div',{attrs:{"id":"windgraphid"}}),_vm._v(" "),_c('div',{attrs:{"id":"windgraphidfocus"}})])}
-var staticRenderFns = []
+var render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('section',{},[_c('div',[_c('div',{staticClass:"tabs"},[_c('ul',[_c('router-link',{attrs:{"to":"/","tag":"li","active-class":"is-active","exact":""}},[_c('a',[_c('icon-base',{attrs:{"view-box":"0 0 100 100"}},[_c('icon-home')],1)],1)]),_vm._v(" "),_c('router-link',{attrs:{"to":"/","tag":"li","active-class":"is-active","exact":""}},[_c('a',[_vm._v("sounding")])]),_vm._v(" "),_c('li',{class:{ 'is-active': _vm.isActive('nam') },on:{"click":_vm.changeModel}},[_c('a',[_vm._v("nam")])]),_vm._v(" "),_c('li',{class:{ 'is-active': _vm.isActive('hrrr') },on:{"click":_vm.changeModel}},[_c('a',[_vm._v("hrrr")])]),_vm._v(" "),_c('li',{on:{"click":_vm.toggleModal}},[_c('a',[_c('icon-base',{attrs:{"view-box":"0 0 50 50"}},[_c('icon-config')],1)],1)])],1)])]),_vm._v(" "),_c('div',{staticClass:"modal",class:{ 'is-active': _vm.isModalActive() }},[_c('div',{staticClass:"modal-background"}),_vm._v(" "),_c('div',{staticClass:"modal-card"},[_c('header',{staticClass:"modal-card-head"},[_c('p',{staticClass:"modal-card-title"},[_vm._v("Configuration")]),_vm._v(" "),_c('button',{staticClass:"delete",attrs:{"aria-label":"close"},on:{"click":_vm.toggleModal}})]),_vm._v(" "),_c('section',{staticClass:"modal-card-body"},[_c('div',{staticClass:"pretty p-default"},[_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.thresholdWind),expression:"thresholdWind"}],attrs:{"type":"checkbox","id":"threshold","value":"Threshold"},domProps:{"checked":Array.isArray(_vm.thresholdWind)?_vm._i(_vm.thresholdWind,"Threshold")>-1:(_vm.thresholdWind)},on:{"change":function($event){var $$a=_vm.thresholdWind,$$el=$event.target,$$c=$$el.checked?(true):(false);if(Array.isArray($$a)){var $$v="Threshold",$$i=_vm._i($$a,$$v);if($$el.checked){$$i<0&&(_vm.thresholdWind=$$a.concat([$$v]))}else{$$i>-1&&(_vm.thresholdWind=$$a.slice(0,$$i).concat($$a.slice($$i+1)))}}else{_vm.thresholdWind=$$c}}}}),_vm._v(" "),_vm._m(0)]),_vm._v(" "),_c('div',{staticClass:"pretty p-default"},[_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.nightOverlay),expression:"nightOverlay"}],attrs:{"type":"checkbox","id":"nightoverlay","value":"NightOverlay"},domProps:{"checked":Array.isArray(_vm.nightOverlay)?_vm._i(_vm.nightOverlay,"NightOverlay")>-1:(_vm.nightOverlay)},on:{"change":function($event){var $$a=_vm.nightOverlay,$$el=$event.target,$$c=$$el.checked?(true):(false);if(Array.isArray($$a)){var $$v="NightOverlay",$$i=_vm._i($$a,$$v);if($$el.checked){$$i<0&&(_vm.nightOverlay=$$a.concat([$$v]))}else{$$i>-1&&(_vm.nightOverlay=$$a.slice(0,$$i).concat($$a.slice($$i+1)))}}else{_vm.nightOverlay=$$c}}}}),_vm._v(" "),_vm._m(1)]),_vm._v(" "),_c('br'),_vm._v(" "),_c('br'),_vm._v(" "),_c('br'),_vm._v(" "),_c('br'),_vm._v(" "),_c('br'),_vm._v(" "),_c('br'),_vm._v(" "),_c('br'),_vm._v(" "),_c('br'),_vm._v(" "),_c('br'),_vm._v(" "),_c('br'),_vm._v(" "),_c('br'),_vm._v(" "),_c('br')])])]),_vm._v(" "),_c('div',{attrs:{"id":"windgraphid"}}),_vm._v(" "),_c('div',{attrs:{"id":"windgraphidfocus"}})])}
+var staticRenderFns = [function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"state"},[_c('label',{attrs:{"for":"threshold"}},[_vm._v("Threshold wind at 15mph")])])},function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"state"},[_c('label',{attrs:{"for":"nightoverlay"}},[_vm._v("Night overlay")])])}]
 var esExports = { render: render, staticRenderFns: staticRenderFns }
 /* harmony default export */ __webpack_exports__["a"] = (esExports);
 

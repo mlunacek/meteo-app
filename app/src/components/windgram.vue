@@ -17,6 +17,7 @@
 
 
     <div  v-bind:class="{ 'is-active': isModalActive() }" class="modal">
+    <!-- <div  class="modal is-active"> -->
     <div class="modal-background"></div>
     <div class="modal-card">
         <header class="modal-card-head">
@@ -25,15 +26,29 @@
         </header>
         <section class="modal-card-body">
         
+        <div class="pretty p-default">
+            <input type="checkbox" id="threshold" value="Threshold" v-model="thresholdWind">
+            <div class="state">
+                <label for="threshold">Threshold wind at 15mph</label>
+            </div>
+        </div>
+
+      <div class="pretty p-default">
+            <input type="checkbox" id="nightoverlay" value="NightOverlay" v-model="nightOverlay">
+            <div class="state">
+                <label for="nightoverlay">Night overlay</label>
+            </div>
+        </div>
 
 
+        <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br>
 
 
         </section>
-        <footer class="modal-card-foot">
-        <button class="button is-success">Save changes</button>
+        <!-- <footer class="modal-card-foot">
+        <button class="button is-success" v-on:click="save">Save changes</button>
         <button class="button" v-on:click="toggleModal">Cancel</button>
-        </footer>
+        </footer> -->
     </div>
     </div>
 
@@ -69,6 +84,8 @@ export default {
             'height': 0,
          },
         'modal': false,
+        'nightOverlay': false,
+        'thresholdWind': false,
         }
     },
 
@@ -78,7 +95,8 @@ export default {
         this.handleResize();
     },
    
-      
+
+
     mounted() {
 
 
@@ -92,10 +110,15 @@ export default {
     },
 
     methods:{
-        
+        save(){
+            console.log("save")        
+        },
         toggleModal(){
             this.modal = !this.modal
-            console.log(this.isModalActive())
+            // console.log(this.isModalActive())
+            console.log(this.thresholdWind)
+            this.graph.setThreshold(this.thresholdWind)
+            this.graph.draw();
             
         },
         
@@ -131,7 +154,7 @@ export default {
 
         load_graph(){
 
-            console.log(this.model)
+            // console.log(this.model)
 
             let data = this.sounding;
             this.graph = new WindGramGraph("windgraphid");
@@ -141,6 +164,7 @@ export default {
             // this.graph.config(this.window.height-70, 800);
             this.graph.data(data);
             this.graph.setKey(this.model)
+            // this.graph.setThreshold(this.thresholdWind)
             this.graph.draw();
 
 
