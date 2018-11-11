@@ -140,6 +140,9 @@ export default {
         handleResize() {
             this.window.width = window.innerWidth;
             this.window.height = window.innerHeight;
+            if(this.window.width > 1152){
+                this.window.width = 1150;
+            }
             
             // this.graph.config(this.window.height-50, 
             //                   this.window.width-20,
@@ -155,6 +158,8 @@ export default {
         load_graph(){
 
             // console.log(this.model)
+
+            
 
             let data = this.sounding;
             this.graph = new WindGramGraph("windgraphid");
