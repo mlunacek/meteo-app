@@ -1,6 +1,5 @@
 import _ from 'lodash';
 import * as d3 from 'd3';
-import simpleheat from 'simpleheat';
 
 export class WindGramGraph {
 
@@ -37,7 +36,7 @@ export class WindGramGraph {
                                 .attr('class', 'svg-block')
                                 .style("z-index", 10);
 
-        this.svgChart.append("defs").append("clipPath")
+        this.rect = this.svgChart.append("defs").append("clipPath")
                                 .attr("id", "clip")
                                 .append("rect")
                                 .attr('width', outerWidth)
@@ -53,9 +52,21 @@ export class WindGramGraph {
                                     .style('margin-left', this.margin.left + 'px')
                                     .style('margin-top', this.margin.top + 'px')
                                     .style("position", "absolute")
-                                    .style("z-index", 1)
+                                    .style("z-index", -1)
                                     .attr('class', 'canvas-block');
 
+        this.timeline = this.svgGroup.append("line")
+                            .attr("clip-path","url(#clip)")
+                            .style("stroke-width", 2)
+                            .style("stroke", "red")
+                            .style("fill", "none");
+
+        this.box = this.svgGroup.append("rect")
+                            .attr("clip-path","url(#clip)")
+                            .style("stroke-width", 1)
+                            .style("fill", "grey")
+                            .style("opacity", 0.9);
+                      
 
         this.context = this.canvasChart.node().getContext('2d');
 
@@ -65,17 +76,13 @@ export class WindGramGraph {
         this.y = d3.scaleLog()
         // this.y.tickFormat(d3.format(",.0f"));
 
-        // the line graph
-        this.line = d3.line()
-                    .x(function(d) { return d.x; })
-                    .y(function(d) { return d.y; })
-                    .context(this.context);
-    
         // this.x = d3.scaleLinear();
         // this.y = d3.scaleLinear();
         
         // Init Axis
         this.xAxis = d3.axisBottom(this.x);
+        this.xAxis.ticks(5);
+
         this.yAxis = d3.axisLeft(this.y);
         
         this.yAxis.tickValues([5,6,8,10,12,14,16,18,20]);
@@ -113,7 +120,8 @@ export class WindGramGraph {
                                 .on('zoom', chart.onZoomClosure().bind(this))
                                 // .call(zoom.transform, d3.zoomIdentity.translate(100, 50).scale(0.5))
 
-        this.canvasChart.call(chart.zoom_function);
+        // this.canvasChart.call(chart.zoom_function);
+        this.svgChart.call(chart.zoom_function);
 
 
         // let chart = this;
@@ -156,6 +164,7 @@ export class WindGramGraph {
                 let values = _.map( item['forecasts']['data'], function(x){
                 
                     let feet = (x[9]/1000.)*3.28
+                    // console.log(previous_height-feet)
                     // feet = x[9];
                     let tmp = {'timestamp': timestamp,
                                 'previous': previous,
@@ -166,7 +175,8 @@ export class WindGramGraph {
                     return tmp
                 });
 
-
+                // fix values[0]
+               
                 minutes_between = (timestamp-previous)
 
                 previous = timestamp;
@@ -178,9 +188,9 @@ export class WindGramGraph {
                 })
             });
 
-            // console.log(chart.tmp[chart.key]['start_time'])
-            // console.log(chart.tmp[chart.key]['end_time'])
-            // console.log(chart.tmp[chart.key]['minutes_between'])
+            _.forEach(formatted[0], function(d){
+                d['previous'] = d['timestamp']-minutes_between
+            });
 
             let periods = (end_time - start_time)/minutes_between;
             let scale = periods/12;
@@ -194,29 +204,16 @@ export class WindGramGraph {
                               'end_time': end_time
                             };
             
-            console.log(minutes_between)
-
         });
 
-        // console.log(chart.key)
-        // // console.log(chart.zoom_function);
-        // console.log(chart.tmp[chart.key]['start_time'])
-        // console.log(chart.tmp[chart.key]['end_time'])
-        // console.log(chart.tmp[chart.key]['minutes_between'])
-
-        // let init_zoom = d3.zoomIdentity.translate(0, 0).scale(3);
-        // chart.canvasChart.call(chart.zoom_function.transform,  init_zoom );
-
-        // console.log(chart._keys);
-
-        
     }
     
     setKey(key){
         let chart = this;
         this.key = key;
         let init_zoom = d3.zoomIdentity.translate(0, 0).scale(chart.tmp[chart.key]['scale']);
-        chart.canvasChart.call(chart.zoom_function.transform,  init_zoom );
+        // chart.canvasChart.call(chart.zoom_function.transform,  init_zoom );
+        chart.svgChart.call(chart.zoom_function.transform,  init_zoom );
     }
     
     
@@ -259,6 +256,24 @@ export class WindGramGraph {
             chart.context.restore();
 
 
+            var today = new Date();
+            // var endtoday = today+3*100*60*60
+            // console.log(today)
+            // console.log(endtoday);
+            // console.log(chart.scaleX(endtoday));
+            // console.log(chart.scaleX(today));
+
+            this.timeline
+                    .attr("x1", chart.scaleX(today))  //<<== change your code here
+                    .attr("y1", 0)
+                    .attr("x2", chart.scaleX(today))  //<<== and here
+                    .attr("y2", chart.height )
+            
+            this.box
+                .attr("x", chart.scaleX(today))  //<<== change your code here
+                .attr("y", 0)
+                .attr("width", 50)  //<<== and here
+                .attr("height", chart.height )
 
 
         }
@@ -294,7 +309,7 @@ export class WindGramGraph {
         let tx = Math.min(0, Math.max(tmp.x, chart.width - chart.width * k));
         let ty = Math.min(0, Math.max(tmp.y, chart.height - chart.height * k));
 
-
+        console.log(tx, tx, k)
 
         chart.transform = d3.zoomIdentity.translate(tx, ty).scale(k);
         chart.draw();
@@ -302,7 +317,10 @@ export class WindGramGraph {
 
 
     getSpeedColor(speed){
-
+        // if( speed > 15){
+        //     return `rgb(0,199,255)`;
+        // }
+     
         return this.color_scale(speed);
 
         if(speed < 0){
@@ -348,7 +366,7 @@ export class WindGramGraph {
         // chart.context.fill();
         
         let x_extra = 0;
-        let y_extra = 0;
+        let y_extra = -3;
 
         let x = chart.scaleX(point.timestamp);
         let width = chart.scaleX(point.timestamp) - chart.scaleX(point.previous) + x_extra;

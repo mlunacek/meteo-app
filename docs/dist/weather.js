@@ -32914,7 +32914,7 @@ module.exports = function(module) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__graphs_windgram_graph__ = __webpack_require__(346);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__icons_IconBase_vue__ = __webpack_require__(97);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__icons_IconHome_vue__ = __webpack_require__(99);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__icons_IconConfig_vue__ = __webpack_require__(684);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__icons_IconConfig_vue__ = __webpack_require__(683);
 //
 //
 //
@@ -54852,7 +54852,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_vue_resource__ = __webpack_require__(316);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__App_vue__ = __webpack_require__(318);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__routes__ = __webpack_require__(337);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__store_store__ = __webpack_require__(687);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__store_store__ = __webpack_require__(686);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_lodash__ = __webpack_require__(226);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_lodash___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_6_lodash__);
 
@@ -60255,7 +60255,7 @@ var esExports = { render: render, staticRenderFns: staticRenderFns }
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__babel_loader_node_modules_vue_loader_lib_selector_type_script_index_0_windgram_vue__ = __webpack_require__(225);
 /* unused harmony namespace reexport */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__node_modules_vue_loader_lib_template_compiler_index_id_data_v_41d98d51_hasScoped_false_buble_transforms_node_modules_vue_loader_lib_selector_type_template_index_0_windgram_vue__ = __webpack_require__(686);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__node_modules_vue_loader_lib_template_compiler_index_id_data_v_41d98d51_hasScoped_false_buble_transforms_node_modules_vue_loader_lib_selector_type_template_index_0_windgram_vue__ = __webpack_require__(685);
 function injectStyle (ssrContext) {
   __webpack_require__(344)
 }
@@ -60320,9 +60320,6 @@ exports.push([module.i, ".svg-block{float:left}.canvas-block{float:left;top:0;le
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_lodash__ = __webpack_require__(226);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_lodash___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_lodash__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_d3__ = __webpack_require__(347);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_simpleheat__ = __webpack_require__(683);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_simpleheat___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_simpleheat__);
-
 
 
 
@@ -60330,7 +60327,7 @@ class WindGramGraph {
 
     constructor(divid) {
 
-        this.container = __WEBPACK_IMPORTED_MODULE_1_d3__["l" /* select */]("#" + divid).append('div').attr("class", "react-root").style("position", "relative");
+        this.container = __WEBPACK_IMPORTED_MODULE_1_d3__["k" /* select */]("#" + divid).append('div').attr("class", "react-root").style("position", "relative");
 
         this.name = divid;
     }
@@ -60343,7 +60340,7 @@ class WindGramGraph {
 
         this.max_y = max_y;
         let outerWidth = defaultWidth;
-        let outerHeight = __WEBPACK_IMPORTED_MODULE_1_d3__["h" /* min */]([defaultHeight, 380]);
+        let outerHeight = __WEBPACK_IMPORTED_MODULE_1_d3__["g" /* min */]([defaultHeight, 380]);
         outerHeight = defaultHeight;
         this.margin = defaultMargin;
 
@@ -60352,38 +60349,37 @@ class WindGramGraph {
 
         this.svgChart = this.container.append('svg:svg').attr('width', outerWidth).attr('height', outerHeight).attr('class', 'svg-block').style("z-index", 10);
 
-        this.svgChart.append("defs").append("clipPath").attr("id", "clip").append("rect").attr('width', outerWidth).attr("height", outerHeight);
+        this.rect = this.svgChart.append("defs").append("clipPath").attr("id", "clip").append("rect").attr('width', outerWidth).attr("height", outerHeight);
 
         this.svgGroup = this.svgChart.append('g').attr('transform', `translate(${this.margin.left}, ${this.margin.top})`);
 
-        this.canvasChart = this.container.append('canvas').attr('width', this.width).attr('height', this.height).style('margin-left', this.margin.left + 'px').style('margin-top', this.margin.top + 'px').style("position", "absolute").style("z-index", 1).attr('class', 'canvas-block');
+        this.canvasChart = this.container.append('canvas').attr('width', this.width).attr('height', this.height).style('margin-left', this.margin.left + 'px').style('margin-top', this.margin.top + 'px').style("position", "absolute").style("z-index", -1).attr('class', 'canvas-block');
+
+        this.timeline = this.svgGroup.append("line").attr("clip-path", "url(#clip)").style("stroke-width", 2).style("stroke", "red").style("fill", "none");
+
+        this.box = this.svgGroup.append("rect").attr("clip-path", "url(#clip)").style("stroke-width", 1).style("fill", "grey").style("opacity", 0.9);
 
         this.context = this.canvasChart.node().getContext('2d');
 
         // Init Scales
-        this.x = __WEBPACK_IMPORTED_MODULE_1_d3__["k" /* scaleTime */]();
+        this.x = __WEBPACK_IMPORTED_MODULE_1_d3__["j" /* scaleTime */]();
         // this.y = d3.scaleLinear();
-        this.y = __WEBPACK_IMPORTED_MODULE_1_d3__["i" /* scaleLog */]();
+        this.y = __WEBPACK_IMPORTED_MODULE_1_d3__["h" /* scaleLog */]();
         // this.y.tickFormat(d3.format(",.0f"));
-
-        // the line graph
-        this.line = __WEBPACK_IMPORTED_MODULE_1_d3__["g" /* line */]().x(function (d) {
-            return d.x;
-        }).y(function (d) {
-            return d.y;
-        }).context(this.context);
 
         // this.x = d3.scaleLinear();
         // this.y = d3.scaleLinear();
 
         // Init Axis
         this.xAxis = __WEBPACK_IMPORTED_MODULE_1_d3__["a" /* axisBottom */](this.x);
+        this.xAxis.ticks(5);
+
         this.yAxis = __WEBPACK_IMPORTED_MODULE_1_d3__["b" /* axisLeft */](this.y);
 
         this.yAxis.tickValues([5, 6, 8, 10, 12, 14, 16, 18, 20]);
         this.yAxis.tickFormat(__WEBPACK_IMPORTED_MODULE_1_d3__["e" /* format */](",.0f"));
 
-        this.transform = __WEBPACK_IMPORTED_MODULE_1_d3__["o" /* zoomIdentity */];
+        this.transform = __WEBPACK_IMPORTED_MODULE_1_d3__["n" /* zoomIdentity */];
 
         this.x.range([0, this.width]).nice();
 
@@ -60400,10 +60396,11 @@ class WindGramGraph {
         this.svgGroup.append('text').attr('x', `${this.width / 2}`).attr('y', `${this.height + 40}`).text('');
 
         let chart = this;
-        chart.zoom_function = __WEBPACK_IMPORTED_MODULE_1_d3__["n" /* zoom */]().scaleExtent([1, 100]).on('zoom', chart.onZoomClosure().bind(this));
+        chart.zoom_function = __WEBPACK_IMPORTED_MODULE_1_d3__["m" /* zoom */]().scaleExtent([1, 100]).on('zoom', chart.onZoomClosure().bind(this));
         // .call(zoom.transform, d3.zoomIdentity.translate(100, 50).scale(0.5))
 
-        this.canvasChart.call(chart.zoom_function);
+        // this.canvasChart.call(chart.zoom_function);
+        this.svgChart.call(chart.zoom_function);
 
         // let chart = this;
         // const zoom_function = d3.zoom().scaleExtent([0.5, 100])
@@ -60419,9 +60416,9 @@ class WindGramGraph {
 
         let chart = this;
         chart._keys = __WEBPACK_IMPORTED_MODULE_0_lodash___default.a.keys(data);
-        chart.color_scale = __WEBPACK_IMPORTED_MODULE_1_d3__["j" /* scaleSequential */](__WEBPACK_IMPORTED_MODULE_1_d3__["f" /* interpolateViridis */]).domain([50, 0]);
+        chart.color_scale = __WEBPACK_IMPORTED_MODULE_1_d3__["i" /* scaleSequential */](__WEBPACK_IMPORTED_MODULE_1_d3__["f" /* interpolateViridis */]).domain([50, 0]);
 
-        var parseTime = __WEBPACK_IMPORTED_MODULE_1_d3__["m" /* timeParse */]("%Y-%m-%d %H:%M:%S");
+        var parseTime = __WEBPACK_IMPORTED_MODULE_1_d3__["l" /* timeParse */]("%Y-%m-%d %H:%M:%S");
 
         chart.tmp = {};
         __WEBPACK_IMPORTED_MODULE_0_lodash___default.a.forEach(chart._keys, function (key) {
@@ -60440,6 +60437,7 @@ class WindGramGraph {
                 let values = __WEBPACK_IMPORTED_MODULE_0_lodash___default.a.map(item['forecasts']['data'], function (x) {
 
                     let feet = x[9] / 1000. * 3.28;
+                    // console.log(previous_height-feet)
                     // feet = x[9];
                     let tmp = { 'timestamp': timestamp,
                         'previous': previous,
@@ -60449,6 +60447,8 @@ class WindGramGraph {
                     previous_height = feet;
                     return tmp;
                 });
+
+                // fix values[0]
 
                 minutes_between = timestamp - previous;
 
@@ -60460,9 +60460,9 @@ class WindGramGraph {
                 });
             });
 
-            // console.log(chart.tmp[chart.key]['start_time'])
-            // console.log(chart.tmp[chart.key]['end_time'])
-            // console.log(chart.tmp[chart.key]['minutes_between'])
+            __WEBPACK_IMPORTED_MODULE_0_lodash___default.a.forEach(formatted[0], function (d) {
+                d['previous'] = d['timestamp'] - minutes_between;
+            });
 
             let periods = (end_time - start_time) / minutes_between;
             let scale = periods / 12;
@@ -60475,28 +60475,15 @@ class WindGramGraph {
                 'start_time': start_time,
                 'end_time': end_time
             };
-
-            console.log(minutes_between);
         });
-
-        // console.log(chart.key)
-        // // console.log(chart.zoom_function);
-        // console.log(chart.tmp[chart.key]['start_time'])
-        // console.log(chart.tmp[chart.key]['end_time'])
-        // console.log(chart.tmp[chart.key]['minutes_between'])
-
-        // let init_zoom = d3.zoomIdentity.translate(0, 0).scale(3);
-        // chart.canvasChart.call(chart.zoom_function.transform,  init_zoom );
-
-        // console.log(chart._keys);
-
     }
 
     setKey(key) {
         let chart = this;
         this.key = key;
-        let init_zoom = __WEBPACK_IMPORTED_MODULE_1_d3__["o" /* zoomIdentity */].translate(0, 0).scale(chart.tmp[chart.key]['scale']);
-        chart.canvasChart.call(chart.zoom_function.transform, init_zoom);
+        let init_zoom = __WEBPACK_IMPORTED_MODULE_1_d3__["n" /* zoomIdentity */].translate(0, 0).scale(chart.tmp[chart.key]['scale']);
+        // chart.canvasChart.call(chart.zoom_function.transform,  init_zoom );
+        chart.svgChart.call(chart.zoom_function.transform, init_zoom);
     }
 
     draw() {
@@ -60536,6 +60523,21 @@ class WindGramGraph {
             // sort the data so that colored and sizes are on top?
             chart._data.forEach(chart.drawPoint, this);
             chart.context.restore();
+
+            var today = new Date();
+            // var endtoday = today+3*100*60*60
+            // console.log(today)
+            // console.log(endtoday);
+            // console.log(chart.scaleX(endtoday));
+            // console.log(chart.scaleX(today));
+
+            this.timeline.attr("x1", chart.scaleX(today)) //<<== change your code here
+            .attr("y1", 0).attr("x2", chart.scaleX(today)) //<<== and here
+            .attr("y2", chart.height);
+
+            this.box.attr("x", chart.scaleX(today)) //<<== change your code here
+            .attr("y", 0).attr("width", 50) //<<== and here
+            .attr("height", chart.height);
         }
         // this.brush_move.call(this.brush.move, [0, 200]);
 
@@ -60565,11 +60567,16 @@ class WindGramGraph {
         let tx = Math.min(0, Math.max(tmp.x, chart.width - chart.width * k));
         let ty = Math.min(0, Math.max(tmp.y, chart.height - chart.height * k));
 
-        chart.transform = __WEBPACK_IMPORTED_MODULE_1_d3__["o" /* zoomIdentity */].translate(tx, ty).scale(k);
+        console.log(tx, tx, k);
+
+        chart.transform = __WEBPACK_IMPORTED_MODULE_1_d3__["n" /* zoomIdentity */].translate(tx, ty).scale(k);
         chart.draw();
     }
 
     getSpeedColor(speed) {
+        // if( speed > 15){
+        //     return `rgb(0,199,255)`;
+        // }
 
         return this.color_scale(speed);
 
@@ -60610,7 +60617,7 @@ class WindGramGraph {
         // chart.context.fill();
 
         let x_extra = 0;
-        let y_extra = 0;
+        let y_extra = -3;
 
         let x = chart.scaleX(point.timestamp);
         let width = chart.scaleX(point.timestamp) - chart.scaleX(point.previous) + x_extra;
@@ -60643,7 +60650,7 @@ class WindGramGraph {
 /* unused harmony reexport version */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_d3_array__ = __webpack_require__(5);
 /* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "d", function() { return __WEBPACK_IMPORTED_MODULE_1_d3_array__["d"]; });
-/* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "h", function() { return __WEBPACK_IMPORTED_MODULE_1_d3_array__["g"]; });
+/* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "g", function() { return __WEBPACK_IMPORTED_MODULE_1_d3_array__["g"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_d3_axis__ = __webpack_require__(365);
 /* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "a", function() { return __WEBPACK_IMPORTED_MODULE_2_d3_axis__["a"]; });
 /* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "b", function() { return __WEBPACK_IMPORTED_MODULE_2_d3_axis__["b"]; });
@@ -60686,20 +60693,20 @@ class WindGramGraph {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_21_d3_random__ = __webpack_require__(575);
 /* unused harmony namespace reexport */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_22_d3_scale__ = __webpack_require__(580);
-/* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "i", function() { return __WEBPACK_IMPORTED_MODULE_22_d3_scale__["a"]; });
-/* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "j", function() { return __WEBPACK_IMPORTED_MODULE_22_d3_scale__["b"]; });
-/* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "k", function() { return __WEBPACK_IMPORTED_MODULE_22_d3_scale__["c"]; });
+/* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "h", function() { return __WEBPACK_IMPORTED_MODULE_22_d3_scale__["a"]; });
+/* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "i", function() { return __WEBPACK_IMPORTED_MODULE_22_d3_scale__["b"]; });
+/* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "j", function() { return __WEBPACK_IMPORTED_MODULE_22_d3_scale__["c"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_23_d3_scale_chromatic__ = __webpack_require__(607);
 /* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "f", function() { return __WEBPACK_IMPORTED_MODULE_23_d3_scale_chromatic__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_24_d3_selection__ = __webpack_require__(4);
 /* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "c", function() { return __WEBPACK_IMPORTED_MODULE_24_d3_selection__["b"]; });
-/* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "l", function() { return __WEBPACK_IMPORTED_MODULE_24_d3_selection__["f"]; });
+/* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "k", function() { return __WEBPACK_IMPORTED_MODULE_24_d3_selection__["f"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_25_d3_shape__ = __webpack_require__(648);
-/* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "g", function() { return __WEBPACK_IMPORTED_MODULE_25_d3_shape__["a"]; });
+/* unused harmony namespace reexport */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_26_d3_time__ = __webpack_require__(50);
 /* unused harmony namespace reexport */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_27_d3_time_format__ = __webpack_require__(86);
-/* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "m", function() { return __WEBPACK_IMPORTED_MODULE_27_d3_time_format__["b"]; });
+/* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "l", function() { return __WEBPACK_IMPORTED_MODULE_27_d3_time_format__["b"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_28_d3_timer__ = __webpack_require__(41);
 /* unused harmony namespace reexport */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_29_d3_transition__ = __webpack_require__(67);
@@ -60707,8 +60714,8 @@ class WindGramGraph {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_30_d3_voronoi__ = __webpack_require__(673);
 /* unused harmony namespace reexport */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_31_d3_zoom__ = __webpack_require__(678);
-/* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "n", function() { return __WEBPACK_IMPORTED_MODULE_31_d3_zoom__["a"]; });
-/* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "o", function() { return __WEBPACK_IMPORTED_MODULE_31_d3_zoom__["b"]; });
+/* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "m", function() { return __WEBPACK_IMPORTED_MODULE_31_d3_zoom__["a"]; });
+/* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "n", function() { return __WEBPACK_IMPORTED_MODULE_31_d3_zoom__["b"]; });
 
 
 
@@ -72714,7 +72721,7 @@ var plasma = ramp(Object(__WEBPACK_IMPORTED_MODULE_0__colors__["a" /* default */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__area__ = __webpack_require__(294);
 /* unused harmony reexport area */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__line__ = __webpack_require__(88);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return __WEBPACK_IMPORTED_MODULE_2__line__["a"]; });
+/* unused harmony reexport line */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__pie__ = __webpack_require__(650);
 /* unused harmony reexport pie */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__areaRadial__ = __webpack_require__(653);
@@ -75058,160 +75065,10 @@ function nopropagation() {
 
 /***/ }),
 /* 683 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-if (true) module.exports = simpleheat;
-
-function simpleheat(canvas, ctx) {
-   
-    console.log(ctx);
-    // if (!(this instanceof simpleheat)) return new simpleheat(canvas);
-
-    // this._canvas = canvas = typeof canvas === 'string' ? document.getElementById(canvas) : canvas;
-    // this._canvas = canvas;
-    this._ctx = ctx;
-    this._width = canvas.width;
-    this._height = canvas.height;
-    this._max = 1;
-    this._data = [];
-}
-
-simpleheat.prototype = {
-
-    defaultRadius: 25,
-
-    defaultGradient: {
-        0.4: 'blue',
-        0.6: 'cyan',
-        0.7: 'lime',
-        0.8: 'yellow',
-        1.0: 'red'
-    },
-
-    data: function (data) {
-        this._data = data;
-        return this;
-    },
-
-    max: function (max) {
-        this._max = max;
-        return this;
-    },
-
-    add: function (point) {
-        this._data.push(point);
-        return this;
-    },
-
-    clear: function () {
-        this._data = [];
-        return this;
-    },
-
-    radius: function (r, blur) {
-        blur = blur === undefined ? 15 : blur;
-
-        // create a grayscale blurred circle image that we'll use for drawing points
-        var circle = this._circle = this._createCanvas(),
-            ctx = circle.getContext('2d'),
-            r2 = this._r = r + blur;
-
-        circle.width = circle.height = r2 * 2;
-
-        ctx.shadowOffsetX = ctx.shadowOffsetY = r2 * 2;
-        ctx.shadowBlur = blur;
-        ctx.shadowColor = 'black';
-
-        ctx.beginPath();
-        ctx.arc(-r2, -r2, r, 0, Math.PI * 2, true);
-        ctx.closePath();
-        ctx.fill();
-
-        return this;
-    },
-
-    resize: function () {
-        this._width = this._canvas.width;
-        this._height = this._canvas.height;
-    },
-
-    gradient: function (grad) {
-        // create a 256x1 gradient that we'll use to turn a grayscale heatmap into a colored one
-        var canvas = this._createCanvas(),
-            ctx = canvas.getContext('2d'),
-            gradient = ctx.createLinearGradient(0, 0, 0, 256);
-
-        canvas.width = 1;
-        canvas.height = 256;
-
-        for (var i in grad) {
-            gradient.addColorStop(+i, grad[i]);
-        }
-
-        ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, 1, 256);
-
-        this._grad = ctx.getImageData(0, 0, 1, 256).data;
-
-        return this;
-    },
-
-    draw: function (minOpacity) {
-        if (!this._circle) this.radius(this.defaultRadius);
-        if (!this._grad) this.gradient(this.defaultGradient);
-
-        var ctx = this._ctx;
-
-        ctx.clearRect(0, 0, this._width, this._height);
-
-        // draw a grayscale heatmap by putting a blurred circle at each data point
-        for (var i = 0, len = this._data.length, p; i < len; i++) {
-            p = this._data[i];
-            ctx.globalAlpha = Math.max(p[2] / this._max, minOpacity === undefined ? 0.05 : minOpacity);
-            ctx.drawImage(this._circle, p[0] - this._r, p[1] - this._r);
-        }
-
-        // colorize the heatmap, using opacity value of each pixel to get the right color from our gradient
-        var colored = ctx.getImageData(0, 0, this._width, this._height);
-        this._colorize(colored.data, this._grad);
-        ctx.putImageData(colored, 0, 0);
-
-        return this;
-    },
-
-    _colorize: function (pixels, gradient) {
-        for (var i = 0, len = pixels.length, j; i < len; i += 4) {
-            j = pixels[i + 3] * 4; // get gradient color from opacity value
-
-            if (j) {
-                pixels[i] = gradient[j];
-                pixels[i + 1] = gradient[j + 1];
-                pixels[i + 2] = gradient[j + 2];
-            }
-        }
-    },
-
-    _createCanvas: function () {
-        if (typeof document !== 'undefined') {
-            return document.createElement('canvas');
-        } else {
-            // create a new canvas instance in node.js
-            // the canvas class needs to have a default constructor without any parameter
-            return new this._canvas.constructor();
-        }
-    }
-};
-
-
-/***/ }),
-/* 684 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__node_modules_vue_loader_lib_template_compiler_index_id_data_v_227c5bec_hasScoped_false_buble_transforms_node_modules_vue_loader_lib_selector_type_template_index_0_IconConfig_vue__ = __webpack_require__(685);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__node_modules_vue_loader_lib_template_compiler_index_id_data_v_227c5bec_hasScoped_false_buble_transforms_node_modules_vue_loader_lib_selector_type_template_index_0_IconConfig_vue__ = __webpack_require__(684);
 var normalizeComponent = __webpack_require__(12)
 /* script */
 var __vue_script__ = null
@@ -75238,7 +75095,7 @@ var Component = normalizeComponent(
 
 
 /***/ }),
-/* 685 */
+/* 684 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -75248,7 +75105,7 @@ var esExports = { render: render, staticRenderFns: staticRenderFns }
 /* harmony default export */ __webpack_exports__["a"] = (esExports);
 
 /***/ }),
-/* 686 */
+/* 685 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -75258,13 +75115,13 @@ var esExports = { render: render, staticRenderFns: staticRenderFns }
 /* harmony default export */ __webpack_exports__["a"] = (esExports);
 
 /***/ }),
-/* 687 */
+/* 686 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (immutable) */ __webpack_exports__["a"] = makeStore;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(94);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vuex__ = __webpack_require__(688);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vuex__ = __webpack_require__(687);
 
 
 
@@ -75327,7 +75184,7 @@ function makeStore(initialState) {
 }
 
 /***/ }),
-/* 688 */
+/* 687 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
