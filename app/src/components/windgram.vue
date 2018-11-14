@@ -40,6 +40,19 @@
             </div>
         </div>
 
+      <div class="pretty p-default">
+            <input type="checkbox" id="theme" value="dark" v-model="theme">
+            <div class="state">
+                <label for="theme">dark theme</label>
+            </div>
+        </div>
+
+      <div class="pretty p-default">
+            <input type="checkbox" id="theme" value="dark" v-model="numbers">
+            <div class="state">
+                <label for="numbers">numbers</label>
+            </div>
+        </div>
 
         <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br>
 
@@ -86,13 +99,29 @@ export default {
         'modal': false,
         'nightOverlay': false,
         'thresholdWind': false,
+        'numbers': true,
         }
     },
 
     created() {
   
+      this.initial_state = this.$store.state.initial_state;
+
+      // Check to see if anything is saved?
+      var obj = JSON.parse(window.localStorage.getItem('store'));
+      console.log(obj)
+      if( obj && obj !== 'null' && obj !== 'undefined'){
+          obj['initial_state'] = this.initial_state;
+          this.$store.replaceState(obj);
+      }
+
+
         window.addEventListener('resize', this.handleResize)
-        this.handleResize();
+        this.window.width = window.innerWidth;
+        this.window.height = window.innerHeight;
+        if(this.window.width > 1152){
+            this.window.width = 1150;
+        }
     },
    
 
@@ -106,6 +135,8 @@ export default {
               
         
         // this.onData();
+        console.log("switching to page")
+        this.$router.push({name: 'windgram', 'params': {'id': this.$route.params.id }});
 
     },
 
@@ -115,10 +146,28 @@ export default {
         },
         toggleModal(){
             this.modal = !this.modal
-            // console.log(this.isModalActive())
-            console.log(this.thresholdWind)
+
             this.graph.setThreshold(this.thresholdWind)
+         
+            console.log("theme -----> ", this.theme)
+            if( this.theme === true){
+                this.graph.background_dark();
+            }
+            else{
+                this.graph.background_light();
+            }
+            if( this.numbers === true){
+                this.graph.numbers_show();
+            }
+            else{
+                this.graph.numbers_hide();
+            }
+
             this.graph.draw();
+
+            const data = JSON.stringify(this.$store.state)
+            console.log("saving state")
+            window.localStorage.setItem('store', data);
             
         },
         
@@ -129,6 +178,7 @@ export default {
         changeModel(event){
             this.$store.state.initial_state.soundings[this.$route.params.id]['model'] = event.target.innerText;
             this.graph.setKey(this.model)
+            
             this.graph.draw();
         },
 
@@ -157,7 +207,7 @@ export default {
 
         load_graph(){
 
-            // console.log(this.model)
+            console.log(this.sounding)
 
             
 
@@ -165,11 +215,25 @@ export default {
             this.graph = new WindGramGraph("windgraphid");
             this.graph.config(this.window.height-50, 
                               this.window.width-20,
-                              20);
+                              18);
             // this.graph.config(this.window.height-70, 800);
             this.graph.data(data);
             this.graph.setKey(this.model)
             // this.graph.setThreshold(this.thresholdWind)
+
+            if( this.theme === true){
+                this.graph.background_dark();
+            }
+            else{
+                this.graph.background_light();
+            }
+            if( this.numbers === true){
+                this.graph.numbers_show();
+            }
+            else{
+                this.graph.numbers_hide();
+            }
+
             this.graph.draw();
 
 
@@ -199,7 +263,19 @@ export default {
         },
         name(){
             return this.$route.params.id;
-        }
+        },
+
+        theme: {
+           get(){
+               return this.$store.state.initial_state['soundings'][this.$route.params.id]['theme'];
+           },
+           set(value){
+              this.$store.state.initial_state['soundings'][this.$route.params.id]['theme'] = value;
+           }
+       },
+
+
+
         
      
      }

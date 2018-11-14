@@ -13,12 +13,9 @@ export default function makeStore(initialState){
         state: {
             'initial_state': initialState,
             'soundings': {},
-            'current_state': {
-                'page': 'windgram',
-                'location': 'broomfield',
-                'model': 'nam',
-            },
+    
         },
+
 
         mutations: {
             FETCH_SOUNDING(state, data) {
