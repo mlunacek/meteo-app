@@ -99,7 +99,6 @@ export default {
         'modal': false,
         'nightOverlay': false,
         'thresholdWind': false,
-        'numbers': true,
         }
     },
 
@@ -267,12 +266,21 @@ export default {
 
         theme: {
            get(){
-               return this.$store.state.initial_state['soundings'][this.$route.params.id]['theme'];
+               return this.$store.state.initial_state['soundings'][this.$route.params.id]['dark'];
            },
            set(value){
-              this.$store.state.initial_state['soundings'][this.$route.params.id]['theme'] = value;
+              this.$store.state.initial_state['soundings'][this.$route.params.id]['dark'] = value;
            }
-       },
+        },
+
+        numbers: {
+           get(){
+               return this.$store.state.initial_state['soundings'][this.$route.params.id]['numbers'];
+           },
+           set(value){
+              this.$store.state.initial_state['soundings'][this.$route.params.id]['numbers'] = value;
+           }
+        },
 
 
 
