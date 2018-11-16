@@ -32,13 +32,14 @@
                 <label for="threshold">Threshold wind at 15mph</label>
             </div>
         </div>
+        <br>
 
-      <div class="pretty p-default">
+      <!-- <div class="pretty p-default">
             <input type="checkbox" id="nightoverlay" value="NightOverlay" v-model="nightOverlay">
             <div class="state">
                 <label for="nightoverlay">Night overlay</label>
             </div>
-        </div>
+        </div> -->
 
       <div class="pretty p-default">
             <input type="checkbox" id="theme" value="dark" v-model="theme">
@@ -46,6 +47,7 @@
                 <label for="theme">dark theme</label>
             </div>
         </div>
+    <br>
 
       <div class="pretty p-default">
             <input type="checkbox" id="theme" value="dark" v-model="numbers">
@@ -98,7 +100,6 @@ export default {
          },
         'modal': false,
         'nightOverlay': false,
-        'thresholdWind': false,
         }
     },
 
@@ -108,9 +109,12 @@ export default {
 
       // Check to see if anything is saved?
       var obj = JSON.parse(window.localStorage.getItem('store'));
-      console.log(obj)
+      console.log("----->", obj)
       if( obj && obj !== 'null' && obj !== 'undefined'){
-          obj['initial_state'] = this.initial_state;
+
+          if (obj['initial_state']['version'] !== this.initial_state.version){
+            obj['initial_state'] = this.initial_state;
+          }
           this.$store.replaceState(obj);
       }
 
@@ -128,27 +132,29 @@ export default {
     mounted() {
 
 
-        this.$store.dispatch("fetchSounding", { url: this.url, 
-                                                id: this.$route.params.id,
-                                                callback: this.onData })   
+        // this.$store.dispatch("fetchSounding", { url: this.url, 
+        //                                         id: this.$route.params.id,
+        //                                         callback: this.onData })   
               
-        
-        // this.onData();
+    
+        this.onData();
         console.log("switching to page")
-        this.$router.push({name: 'windgram', 'params': {'id': this.$route.params.id }});
+        // this.$router.push({name: 'windgram', 'params': {'id': this.$route.params.id }});
 
     },
 
     methods:{
-        save(){
-            console.log("save")        
+        save(){  
+            const data = JSON.stringify(this.$store.state)
+            console.log(this.$store.state.initial_state);
+            console.log("saving state");
+            window.localStorage.setItem('store', data);
         },
         toggleModal(){
             this.modal = !this.modal
 
-            this.graph.setThreshold(this.thresholdWind)
          
-            console.log("theme -----> ", this.theme)
+            // console.log("theme -----> ", this.theme)
             if( this.theme === true){
                 this.graph.background_dark();
             }
@@ -162,11 +168,12 @@ export default {
                 this.graph.numbers_hide();
             }
 
-            this.graph.draw();
+            this.graph.setThreshold(this.thresholdWind);
 
-            const data = JSON.stringify(this.$store.state)
-            console.log("saving state")
-            window.localStorage.setItem('store', data);
+            this.graph.predraw();
+            // this.graph.initial_scale();
+            this.graph.draw();
+            this.save();
             
         },
         
@@ -177,8 +184,12 @@ export default {
         changeModel(event){
             this.$store.state.initial_state.soundings[this.$route.params.id]['model'] = event.target.innerText;
             this.graph.setKey(this.model)
-            
+
+            this.graph.predraw();
+            this.graph.initial_scale();
             this.graph.draw();
+            
+            this.save();
         },
 
         isActive(key){
@@ -192,12 +203,6 @@ export default {
             if(this.window.width > 1152){
                 this.window.width = 1150;
             }
-            
-            // this.graph.config(this.window.height-50, 
-            //                   this.window.width-20,
-            //                   20);   
-            // this.graph.setKey('hrrr')      
-            // this.graph.draw();
         },
 
         onData() {
@@ -206,17 +211,25 @@ export default {
 
         load_graph(){
 
-            console.log(this.sounding)
+            console.log("------------>", this.model)
 
-            
 
             let data = this.sounding;
             this.graph = new WindGramGraph("windgraphid");
             this.graph.config(this.window.height-50, 
                               this.window.width-20,
                               18);
+
+            if( this.window.width > 1000){
+                this.graph.scale_desktop();
+            }
+            else{
+                this.graph.scale_normal();
+            }
+
             // this.graph.config(this.window.height-70, 800);
             this.graph.data(data);
+            
             this.graph.setKey(this.model)
             // this.graph.setThreshold(this.thresholdWind)
 
@@ -226,14 +239,22 @@ export default {
             else{
                 this.graph.background_light();
             }
+            console.log(this.numbers)
             if( this.numbers === true){
+                
                 this.graph.numbers_show();
             }
             else{
                 this.graph.numbers_hide();
             }
 
+            this.graph.setThreshold(this.thresholdWind);
+
+            this.graph.predraw();
+            this.graph.initial_scale();
             this.graph.draw();
+            
+
 
 
             // this.graph2 = new WindGramGraph("windgraphidfocus");
@@ -249,6 +270,7 @@ export default {
     
     computed: {
         location(){
+            console.log(this.$store.getters.get_location(this.$route.params.id))
             return this.$store.getters.get_location(this.$route.params.id);
         },
         url(){
@@ -266,19 +288,28 @@ export default {
 
         theme: {
            get(){
-               return this.$store.state.initial_state['soundings'][this.$route.params.id]['dark'];
+               return this.$store.state.initial_state['parameters']['dark'];
            },
            set(value){
-              this.$store.state.initial_state['soundings'][this.$route.params.id]['dark'] = value;
+              this.$store.state.initial_state['parameters']['dark'] = value;
            }
         },
 
         numbers: {
            get(){
-               return this.$store.state.initial_state['soundings'][this.$route.params.id]['numbers'];
+               return this.$store.state.initial_state['parameters']['numbers'];
            },
            set(value){
-              this.$store.state.initial_state['soundings'][this.$route.params.id]['numbers'] = value;
+              this.$store.state.initial_state['parameters']['numbers'] = value;
+           }
+        },
+
+        thresholdWind: {
+           get(){
+               return this.$store.state.initial_state['parameters']['threshold'];
+           },
+           set(value){
+              this.$store.state.initial_state['parameters']['threshold'] = value;
            }
         },
 

@@ -27,6 +27,7 @@ export class WindGramGraph {
     numbers_hide(){
         this.show_numbers = false;
     }
+
     scale_normal(){
         this.num_periods = 9;
         this.arrorw_scale = 0.2;
@@ -35,13 +36,17 @@ export class WindGramGraph {
         this.num_periods = 12;
         this.arrorw_scale = 0.15;
     }
+    scale_desktop(){
+        this.num_periods = 30;
+        this.arrorw_scale = 0.15;
+    }
 
     config(defaultHeight, defaultWidth, max_y){
 
         this.background_light()
         this.scale_normal()
         this.numbers_show()
-     
+        // this.scale_desktop()
  
         
        
@@ -188,6 +193,10 @@ export class WindGramGraph {
         
  
         let chart = this;
+
+        
+
+
         chart._keys = _.keys(data);
         console.log(chart._keys)
 
@@ -372,13 +381,10 @@ export class WindGramGraph {
     setKey(key){
         let chart = this;
         this.key = key;
-        let init_zoom = d3.zoomIdentity.translate(-200, 0).scale(chart.tmp[chart.key]['scale']);
-        // chart.canvasChart.call(chart.zoom_function.transform,  init_zoom );
-        chart.svgChart.call(chart.zoom_function.transform,  init_zoom );
     }
     
     setThreshold(threshold){
-        console.log(threshold);
+        console.log("threshold", threshold);
 
         if(threshold){
             this.thresholdWind = 15;
@@ -386,7 +392,6 @@ export class WindGramGraph {
         else{
             this.thresholdWind = 100;
         }
-        console.log(this.thresholdWind)
     }
     
 
@@ -419,6 +424,7 @@ export class WindGramGraph {
         // console.log(tx, tx, k)
 
         chart.transform = d3.zoomIdentity.translate(tx, ty).scale(k);
+        chart.predraw();
         chart.draw();
     }
 
@@ -482,6 +488,37 @@ export class WindGramGraph {
     }
 
 
+    predraw(){
+        let chart = this;
+        let key = chart.key;
+        
+        if(key){
+
+        chart._data = chart.tmp[key]['data'];
+        chart._arrows = chart.tmp[key]['arrows'];
+
+        chart._x0_values = _.map(chart._data, 'timestamp');
+        chart._y0_values = _.map(chart._data, 'height');
+
+        chart._x0 = d3.extent(chart._x0_values);
+        chart._y0 = d3.extent(chart._y0_values);
+
+        // console.log(chart._y0)
+        this.x.domain(chart._x0);
+        this.y.domain([chart._y0[0]*0.97, chart.max_y]);
+        
+        this.scaleX = this.transform.rescaleX(this.x);
+        this.scaleY = this.transform.rescaleY(this.y);
+        this.scaleY = this.y;
+        // this.scaleX = this.x;
+
+        this.gxAxis.call(this.xAxis.scale(this.scaleX));
+        this.gyAxis.call(this.yAxis.scale(this.scaleY))
+
+        }
+
+    }
+
     draw(){
 
         let chart = this;
@@ -491,29 +528,6 @@ export class WindGramGraph {
         
             // Clear svg
 
-
-            chart._data = chart.tmp[key]['data'];
-            chart._arrows = chart.tmp[key]['arrows'];
-
-            chart._x0_values = _.map(chart._data, 'timestamp');
-            chart._y0_values = _.map(chart._data, 'height');
-
-            chart._x0 = d3.extent(chart._x0_values);
-            chart._y0 = d3.extent(chart._y0_values);
-
-            // console.log(chart._y0)
-            this.x.domain(chart._x0);
-            this.y.domain([chart._y0[0]*0.97, chart.max_y]);
-            
-            this.scaleX = this.transform.rescaleX(this.x);
-            this.scaleY = this.transform.rescaleY(this.y);
-            this.scaleY = this.y;
-            // this.scaleX = this.x;
-
-            this.gxAxis.call(this.xAxis.scale(this.scaleX));
-            this.gyAxis.call(this.yAxis.scale(this.scaleY))
-    
-    
             var today = new Date();
             // var endtoday = today+3*100*60*60
             // console.log(today)
@@ -550,8 +564,7 @@ export class WindGramGraph {
             
        
        
-       
-       
+
             chart.context.restore();
 
 
@@ -560,6 +573,24 @@ export class WindGramGraph {
         }
        
 
+    }
+
+    initial_scale(){
+        let chart = this;
+        let key = chart.key;
+        
+        if(key){
+            // let translatex = -100
+
+            let today = new Date();
+
+            console.log();
+            console.log(today, chart.scaleX.domain())
+            console.log();
+
+            let init_zoom = d3.zoomIdentity.translate(0, 0).scale(chart.tmp[chart.key]['scale']);
+            chart.svgChart.call(chart.zoom_function.transform,  init_zoom );
+        }
     }
 
     drawPoint(point){

@@ -50108,6 +50108,8 @@ module.exports = function(module) {
 //
 //
 //
+//
+//
 
 
 
@@ -50130,8 +50132,7 @@ module.exports = function(module) {
                 'height': 0
             },
             'modal': false,
-            'nightOverlay': false,
-            'thresholdWind': false
+            'nightOverlay': false
         };
     },
 
@@ -50141,9 +50142,12 @@ module.exports = function(module) {
 
         // Check to see if anything is saved?
         var obj = JSON.parse(window.localStorage.getItem('store'));
-        console.log(obj);
+        console.log("----->", obj);
         if (obj && obj !== 'null' && obj !== 'undefined') {
-            obj['initial_state'] = this.initial_state;
+
+            if (obj['initial_state']['version'] !== this.initial_state.version) {
+                obj['initial_state'] = this.initial_state;
+            }
             this.$store.replaceState(obj);
         }
 
@@ -50157,25 +50161,27 @@ module.exports = function(module) {
 
     mounted() {
 
-        this.$store.dispatch("fetchSounding", { url: this.url,
-            id: this.$route.params.id,
-            callback: this.onData });
+        // this.$store.dispatch("fetchSounding", { url: this.url, 
+        //                                         id: this.$route.params.id,
+        //                                         callback: this.onData })   
 
-        // this.onData();
+
+        this.onData();
         console.log("switching to page");
-        this.$router.push({ name: 'windgram', 'params': { 'id': this.$route.params.id } });
+        // this.$router.push({name: 'windgram', 'params': {'id': this.$route.params.id }});
     },
 
     methods: {
         save() {
-            console.log("save");
+            const data = JSON.stringify(this.$store.state);
+            console.log(this.$store.state.initial_state);
+            console.log("saving state");
+            window.localStorage.setItem('store', data);
         },
         toggleModal() {
             this.modal = !this.modal;
 
-            this.graph.setThreshold(this.thresholdWind);
-
-            console.log("theme -----> ", this.theme);
+            // console.log("theme -----> ", this.theme)
             if (this.theme === true) {
                 this.graph.background_dark();
             } else {
@@ -50187,11 +50193,12 @@ module.exports = function(module) {
                 this.graph.numbers_hide();
             }
 
-            this.graph.draw();
+            this.graph.setThreshold(this.thresholdWind);
 
-            const data = JSON.stringify(this.$store.state);
-            console.log("saving state");
-            window.localStorage.setItem('store', data);
+            this.graph.predraw();
+            // this.graph.initial_scale();
+            this.graph.draw();
+            this.save();
         },
 
         isModalActive() {
@@ -50202,7 +50209,11 @@ module.exports = function(module) {
             this.$store.state.initial_state.soundings[this.$route.params.id]['model'] = event.target.innerText;
             this.graph.setKey(this.model);
 
+            this.graph.predraw();
+            this.graph.initial_scale();
             this.graph.draw();
+
+            this.save();
         },
 
         isActive(key) {
@@ -50215,12 +50226,6 @@ module.exports = function(module) {
             if (this.window.width > 1152) {
                 this.window.width = 1150;
             }
-
-            // this.graph.config(this.window.height-50, 
-            //                   this.window.width-20,
-            //                   20);   
-            // this.graph.setKey('hrrr')      
-            // this.graph.draw();
         },
 
         onData() {
@@ -50229,13 +50234,21 @@ module.exports = function(module) {
 
         load_graph() {
 
-            console.log(this.sounding);
+            console.log("------------>", this.model);
 
             let data = this.sounding;
             this.graph = new __WEBPACK_IMPORTED_MODULE_0__graphs_windgram_graph__["a" /* WindGramGraph */]("windgraphid");
             this.graph.config(this.window.height - 50, this.window.width - 20, 18);
+
+            if (this.window.width > 1000) {
+                this.graph.scale_desktop();
+            } else {
+                this.graph.scale_normal();
+            }
+
             // this.graph.config(this.window.height-70, 800);
             this.graph.data(data);
+
             this.graph.setKey(this.model);
             // this.graph.setThreshold(this.thresholdWind)
 
@@ -50244,12 +50257,18 @@ module.exports = function(module) {
             } else {
                 this.graph.background_light();
             }
+            console.log(this.numbers);
             if (this.numbers === true) {
+
                 this.graph.numbers_show();
             } else {
                 this.graph.numbers_hide();
             }
 
+            this.graph.setThreshold(this.thresholdWind);
+
+            this.graph.predraw();
+            this.graph.initial_scale();
             this.graph.draw();
 
             // this.graph2 = new WindGramGraph("windgraphidfocus");
@@ -50264,6 +50283,7 @@ module.exports = function(module) {
 
     computed: {
         location() {
+            console.log(this.$store.getters.get_location(this.$route.params.id));
             return this.$store.getters.get_location(this.$route.params.id);
         },
         url() {
@@ -50281,19 +50301,28 @@ module.exports = function(module) {
 
         theme: {
             get() {
-                return this.$store.state.initial_state['soundings'][this.$route.params.id]['dark'];
+                return this.$store.state.initial_state['parameters']['dark'];
             },
             set(value) {
-                this.$store.state.initial_state['soundings'][this.$route.params.id]['dark'] = value;
+                this.$store.state.initial_state['parameters']['dark'] = value;
             }
         },
 
         numbers: {
             get() {
-                return this.$store.state.initial_state['soundings'][this.$route.params.id]['numbers'];
+                return this.$store.state.initial_state['parameters']['numbers'];
             },
             set(value) {
-                this.$store.state.initial_state['soundings'][this.$route.params.id]['numbers'] = value;
+                this.$store.state.initial_state['parameters']['numbers'] = value;
+            }
+        },
+
+        thresholdWind: {
+            get() {
+                return this.$store.state.initial_state['parameters']['threshold'];
+            },
+            set(value) {
+                this.$store.state.initial_state['parameters']['threshold'] = value;
             }
         }
 
@@ -55132,7 +55161,8 @@ class Arrow {
         //Translate this.context to center
         // this.context.translate(200, 200);
         // Rotate
-        this.context.rotate(angle * 0.0174533);
+
+        this.context.rotate((angle + 90) * 0.0174533);
         // this.context.translate(cx, cy);
 
         let half_thinkness = Math.min(windspeed, 25);
@@ -55213,21 +55243,22 @@ class Arrow {
     this.draw_arrow = new __WEBPACK_IMPORTED_MODULE_3__graphs_arrow__["a" /* Arrow */](this.context);
     this.context.clearRect(0, 0, 600, 400);
 
-    this.draw_arrow.draw(100, 50, 180, 50, 0.75);
-    this.draw_arrow.draw(200, 50, 90, 50, 0.85);
-    this.draw_arrow.draw(300, 50, 180, 50, 1);
+    // this.draw_arrow.draw(100, 50, 180, 50, 0.75);
+    // this.draw_arrow.draw(200, 50, 90, 50, 0.85);
+    // this.draw_arrow.draw(300, 50, 180, 50, 1);
 
-    this.draw_arrow.draw(100, 150, 0, 1, 0.75);
-    this.draw_arrow.draw(200, 150, 0, 5, 0.75);
-    this.draw_arrow.draw(300, 150, 0, 10, 1);
+    this.draw_arrow.draw(100, 150, 0, 1, 1);
+    this.draw_arrow.draw(200, 150, 90, 5, 1);
+    this.draw_arrow.draw(300, 150, 180, 10, 1);
 
-    this.draw_arrow.draw(100, 250, 0, 15, 1);
-    this.draw_arrow.draw(200, 250, 0, 20, 1);
-    this.draw_arrow.draw(300, 250, 0, 25, 1);
+    this.draw_arrow.draw(100, 250, 270, 15, 1);
+    // this.draw_arrow.draw(200, 250, 0, 20, 1);
+    // this.draw_arrow.draw(300, 250, 0, 25, 1);
 
-    this.draw_arrow.draw(100, 350, 90, 3, 1);
-    this.draw_arrow.draw(200, 350, 90, 8, 1);
-    this.draw_arrow.draw(300, 350, 90, 13, 1);
+    // this.draw_arrow.draw(100, 350, 90, 3, 1);
+    // this.draw_arrow.draw(200, 350, 90, 8, 1);
+    // this.draw_arrow.draw(300, 350, 90, 13, 1);
+
 
     // this.draw(100, 100, 0,  0.6);
     // this.draw(200, 100, 45, 0.4);
@@ -60668,7 +60699,7 @@ var esExports = { render: render, staticRenderFns: staticRenderFns }
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__babel_loader_node_modules_vue_loader_lib_selector_type_script_index_0_windgram_vue__ = __webpack_require__(226);
 /* unused harmony namespace reexport */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__node_modules_vue_loader_lib_template_compiler_index_id_data_v_2ca6d204_hasScoped_false_buble_transforms_node_modules_vue_loader_lib_selector_type_template_index_0_windgram_vue__ = __webpack_require__(687);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__node_modules_vue_loader_lib_template_compiler_index_id_data_v_e11c74ae_hasScoped_false_buble_transforms_node_modules_vue_loader_lib_selector_type_template_index_0_windgram_vue__ = __webpack_require__(687);
 function injectStyle (ssrContext) {
   __webpack_require__(347)
 }
@@ -60688,7 +60719,7 @@ var __vue_scopeId__ = null
 var __vue_module_identifier__ = null
 var Component = normalizeComponent(
   __WEBPACK_IMPORTED_MODULE_0__babel_loader_node_modules_vue_loader_lib_selector_type_script_index_0_windgram_vue__["a" /* default */],
-  __WEBPACK_IMPORTED_MODULE_1__node_modules_vue_loader_lib_template_compiler_index_id_data_v_2ca6d204_hasScoped_false_buble_transforms_node_modules_vue_loader_lib_selector_type_template_index_0_windgram_vue__["a" /* default */],
+  __WEBPACK_IMPORTED_MODULE_1__node_modules_vue_loader_lib_template_compiler_index_id_data_v_e11c74ae_hasScoped_false_buble_transforms_node_modules_vue_loader_lib_selector_type_template_index_0_windgram_vue__["a" /* default */],
   __vue_template_functional__,
   __vue_styles__,
   __vue_scopeId__,
@@ -60709,7 +60740,7 @@ var content = __webpack_require__(348);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(21)("0087a060", content, true, {});
+var update = __webpack_require__(21)("59f3d229", content, true, {});
 
 /***/ }),
 /* 348 */
@@ -60759,6 +60790,7 @@ class WindGramGraph {
     numbers_hide() {
         this.show_numbers = false;
     }
+
     scale_normal() {
         this.num_periods = 9;
         this.arrorw_scale = 0.2;
@@ -60767,12 +60799,18 @@ class WindGramGraph {
         this.num_periods = 12;
         this.arrorw_scale = 0.15;
     }
+    scale_desktop() {
+        this.num_periods = 30;
+        this.arrorw_scale = 0.15;
+    }
 
     config(defaultHeight, defaultWidth, max_y) {
 
         this.background_light();
         this.scale_normal();
         this.numbers_show();
+        // this.scale_desktop()
+
 
         let defaultMargin = { 'top': 10, 'left': 30, 'right': 10, 'bottom': 40 };
 
@@ -60865,6 +60903,7 @@ class WindGramGraph {
     data(data) {
 
         let chart = this;
+
         chart._keys = __WEBPACK_IMPORTED_MODULE_0_lodash___default.a.keys(data);
         console.log(chart._keys);
 
@@ -61035,20 +61074,16 @@ class WindGramGraph {
     setKey(key) {
         let chart = this;
         this.key = key;
-        let init_zoom = __WEBPACK_IMPORTED_MODULE_1_d3__["n" /* zoomIdentity */].translate(-200, 0).scale(chart.tmp[chart.key]['scale']);
-        // chart.canvasChart.call(chart.zoom_function.transform,  init_zoom );
-        chart.svgChart.call(chart.zoom_function.transform, init_zoom);
     }
 
     setThreshold(threshold) {
-        console.log(threshold);
+        console.log("threshold", threshold);
 
         if (threshold) {
             this.thresholdWind = 15;
         } else {
             this.thresholdWind = 100;
         }
-        console.log(this.thresholdWind);
     }
 
     onZoomClosure() {
@@ -61076,6 +61111,7 @@ class WindGramGraph {
         // console.log(tx, tx, k)
 
         chart.transform = __WEBPACK_IMPORTED_MODULE_1_d3__["n" /* zoomIdentity */].translate(tx, ty).scale(k);
+        chart.predraw();
         chart.draw();
     }
 
@@ -61126,15 +61162,11 @@ class WindGramGraph {
         return "rgb(100,0,74)";
     }
 
-    draw() {
-
+    predraw() {
         let chart = this;
         let key = chart.key;
 
         if (key) {
-
-            // Clear svg
-
 
             chart._data = chart.tmp[key]['data'];
             chart._arrows = chart.tmp[key]['arrows'];
@@ -61156,6 +61188,17 @@ class WindGramGraph {
 
             this.gxAxis.call(this.xAxis.scale(this.scaleX));
             this.gyAxis.call(this.yAxis.scale(this.scaleY));
+        }
+    }
+
+    draw() {
+
+        let chart = this;
+        let key = chart.key;
+
+        if (key) {
+
+            // Clear svg
 
             var today = new Date();
             // var endtoday = today+3*100*60*60
@@ -61186,6 +61229,24 @@ class WindGramGraph {
             chart._arrows.forEach(chart.drawArrow, this);
 
             chart.context.restore();
+        }
+    }
+
+    initial_scale() {
+        let chart = this;
+        let key = chart.key;
+
+        if (key) {
+            // let translatex = -100
+
+            let today = new Date();
+
+            console.log();
+            console.log(today, chart.scaleX.domain());
+            console.log();
+
+            let init_zoom = __WEBPACK_IMPORTED_MODULE_1_d3__["n" /* zoomIdentity */].translate(0, 0).scale(chart.tmp[chart.key]['scale']);
+            chart.svgChart.call(chart.zoom_function.transform, init_zoom);
         }
     }
 
@@ -75617,8 +75678,8 @@ var esExports = { render: render, staticRenderFns: staticRenderFns }
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-var render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('section',{},[_c('div',[_c('div',{staticClass:"tabs"},[_c('ul',[_c('router-link',{attrs:{"to":"/","tag":"li","active-class":"is-active","exact":""}},[_c('a',[_c('icon-base',{attrs:{"view-box":"0 0 100 100"}},[_c('icon-home')],1)],1)]),_vm._v(" "),_c('router-link',{attrs:{"to":"/","tag":"li","active-class":"is-active","exact":""}},[_c('a',[_vm._v("sounding")])]),_vm._v(" "),_c('li',{class:{ 'is-active': _vm.isActive('nam') },on:{"click":_vm.changeModel}},[_c('a',[_vm._v("nam")])]),_vm._v(" "),_c('li',{class:{ 'is-active': _vm.isActive('hrrr') },on:{"click":_vm.changeModel}},[_c('a',[_vm._v("hrrr")])]),_vm._v(" "),_c('li',{on:{"click":_vm.toggleModal}},[_c('a',[_c('icon-base',{attrs:{"view-box":"0 0 50 50"}},[_c('icon-config')],1)],1)])],1)])]),_vm._v(" "),_c('div',{staticClass:"modal",class:{ 'is-active': _vm.isModalActive() }},[_c('div',{staticClass:"modal-background"}),_vm._v(" "),_c('div',{staticClass:"modal-card"},[_c('header',{staticClass:"modal-card-head"},[_c('p',{staticClass:"modal-card-title"},[_vm._v("Configuration")]),_vm._v(" "),_c('button',{staticClass:"delete",attrs:{"aria-label":"close"},on:{"click":_vm.toggleModal}})]),_vm._v(" "),_c('section',{staticClass:"modal-card-body"},[_c('div',{staticClass:"pretty p-default"},[_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.thresholdWind),expression:"thresholdWind"}],attrs:{"type":"checkbox","id":"threshold","value":"Threshold"},domProps:{"checked":Array.isArray(_vm.thresholdWind)?_vm._i(_vm.thresholdWind,"Threshold")>-1:(_vm.thresholdWind)},on:{"change":function($event){var $$a=_vm.thresholdWind,$$el=$event.target,$$c=$$el.checked?(true):(false);if(Array.isArray($$a)){var $$v="Threshold",$$i=_vm._i($$a,$$v);if($$el.checked){$$i<0&&(_vm.thresholdWind=$$a.concat([$$v]))}else{$$i>-1&&(_vm.thresholdWind=$$a.slice(0,$$i).concat($$a.slice($$i+1)))}}else{_vm.thresholdWind=$$c}}}}),_vm._v(" "),_vm._m(0)]),_vm._v(" "),_c('div',{staticClass:"pretty p-default"},[_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.nightOverlay),expression:"nightOverlay"}],attrs:{"type":"checkbox","id":"nightoverlay","value":"NightOverlay"},domProps:{"checked":Array.isArray(_vm.nightOverlay)?_vm._i(_vm.nightOverlay,"NightOverlay")>-1:(_vm.nightOverlay)},on:{"change":function($event){var $$a=_vm.nightOverlay,$$el=$event.target,$$c=$$el.checked?(true):(false);if(Array.isArray($$a)){var $$v="NightOverlay",$$i=_vm._i($$a,$$v);if($$el.checked){$$i<0&&(_vm.nightOverlay=$$a.concat([$$v]))}else{$$i>-1&&(_vm.nightOverlay=$$a.slice(0,$$i).concat($$a.slice($$i+1)))}}else{_vm.nightOverlay=$$c}}}}),_vm._v(" "),_vm._m(1)]),_vm._v(" "),_c('div',{staticClass:"pretty p-default"},[_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.theme),expression:"theme"}],attrs:{"type":"checkbox","id":"theme","value":"dark"},domProps:{"checked":Array.isArray(_vm.theme)?_vm._i(_vm.theme,"dark")>-1:(_vm.theme)},on:{"change":function($event){var $$a=_vm.theme,$$el=$event.target,$$c=$$el.checked?(true):(false);if(Array.isArray($$a)){var $$v="dark",$$i=_vm._i($$a,$$v);if($$el.checked){$$i<0&&(_vm.theme=$$a.concat([$$v]))}else{$$i>-1&&(_vm.theme=$$a.slice(0,$$i).concat($$a.slice($$i+1)))}}else{_vm.theme=$$c}}}}),_vm._v(" "),_vm._m(2)]),_vm._v(" "),_c('div',{staticClass:"pretty p-default"},[_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.numbers),expression:"numbers"}],attrs:{"type":"checkbox","id":"theme","value":"dark"},domProps:{"checked":Array.isArray(_vm.numbers)?_vm._i(_vm.numbers,"dark")>-1:(_vm.numbers)},on:{"change":function($event){var $$a=_vm.numbers,$$el=$event.target,$$c=$$el.checked?(true):(false);if(Array.isArray($$a)){var $$v="dark",$$i=_vm._i($$a,$$v);if($$el.checked){$$i<0&&(_vm.numbers=$$a.concat([$$v]))}else{$$i>-1&&(_vm.numbers=$$a.slice(0,$$i).concat($$a.slice($$i+1)))}}else{_vm.numbers=$$c}}}}),_vm._v(" "),_vm._m(3)]),_vm._v(" "),_c('br'),_vm._v(" "),_c('br'),_vm._v(" "),_c('br'),_vm._v(" "),_c('br'),_vm._v(" "),_c('br'),_vm._v(" "),_c('br'),_vm._v(" "),_c('br'),_vm._v(" "),_c('br'),_vm._v(" "),_c('br'),_vm._v(" "),_c('br'),_vm._v(" "),_c('br'),_vm._v(" "),_c('br')])])]),_vm._v(" "),_c('div',{attrs:{"id":"windgraphid"}}),_vm._v(" "),_c('div',{attrs:{"id":"windgraphidfocus"}})])}
-var staticRenderFns = [function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"state"},[_c('label',{attrs:{"for":"threshold"}},[_vm._v("Threshold wind at 15mph")])])},function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"state"},[_c('label',{attrs:{"for":"nightoverlay"}},[_vm._v("Night overlay")])])},function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"state"},[_c('label',{attrs:{"for":"theme"}},[_vm._v("dark theme")])])},function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"state"},[_c('label',{attrs:{"for":"numbers"}},[_vm._v("numbers")])])}]
+var render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('section',{},[_c('div',[_c('div',{staticClass:"tabs"},[_c('ul',[_c('router-link',{attrs:{"to":"/","tag":"li","active-class":"is-active","exact":""}},[_c('a',[_c('icon-base',{attrs:{"view-box":"0 0 100 100"}},[_c('icon-home')],1)],1)]),_vm._v(" "),_c('router-link',{attrs:{"to":"/","tag":"li","active-class":"is-active","exact":""}},[_c('a',[_vm._v("sounding")])]),_vm._v(" "),_c('li',{class:{ 'is-active': _vm.isActive('nam') },on:{"click":_vm.changeModel}},[_c('a',[_vm._v("nam")])]),_vm._v(" "),_c('li',{class:{ 'is-active': _vm.isActive('hrrr') },on:{"click":_vm.changeModel}},[_c('a',[_vm._v("hrrr")])]),_vm._v(" "),_c('li',{on:{"click":_vm.toggleModal}},[_c('a',[_c('icon-base',{attrs:{"view-box":"0 0 50 50"}},[_c('icon-config')],1)],1)])],1)])]),_vm._v(" "),_c('div',{staticClass:"modal",class:{ 'is-active': _vm.isModalActive() }},[_c('div',{staticClass:"modal-background"}),_vm._v(" "),_c('div',{staticClass:"modal-card"},[_c('header',{staticClass:"modal-card-head"},[_c('p',{staticClass:"modal-card-title"},[_vm._v("Configuration")]),_vm._v(" "),_c('button',{staticClass:"delete",attrs:{"aria-label":"close"},on:{"click":_vm.toggleModal}})]),_vm._v(" "),_c('section',{staticClass:"modal-card-body"},[_c('div',{staticClass:"pretty p-default"},[_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.thresholdWind),expression:"thresholdWind"}],attrs:{"type":"checkbox","id":"threshold","value":"Threshold"},domProps:{"checked":Array.isArray(_vm.thresholdWind)?_vm._i(_vm.thresholdWind,"Threshold")>-1:(_vm.thresholdWind)},on:{"change":function($event){var $$a=_vm.thresholdWind,$$el=$event.target,$$c=$$el.checked?(true):(false);if(Array.isArray($$a)){var $$v="Threshold",$$i=_vm._i($$a,$$v);if($$el.checked){$$i<0&&(_vm.thresholdWind=$$a.concat([$$v]))}else{$$i>-1&&(_vm.thresholdWind=$$a.slice(0,$$i).concat($$a.slice($$i+1)))}}else{_vm.thresholdWind=$$c}}}}),_vm._v(" "),_vm._m(0)]),_vm._v(" "),_c('br'),_vm._v(" "),_c('div',{staticClass:"pretty p-default"},[_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.theme),expression:"theme"}],attrs:{"type":"checkbox","id":"theme","value":"dark"},domProps:{"checked":Array.isArray(_vm.theme)?_vm._i(_vm.theme,"dark")>-1:(_vm.theme)},on:{"change":function($event){var $$a=_vm.theme,$$el=$event.target,$$c=$$el.checked?(true):(false);if(Array.isArray($$a)){var $$v="dark",$$i=_vm._i($$a,$$v);if($$el.checked){$$i<0&&(_vm.theme=$$a.concat([$$v]))}else{$$i>-1&&(_vm.theme=$$a.slice(0,$$i).concat($$a.slice($$i+1)))}}else{_vm.theme=$$c}}}}),_vm._v(" "),_vm._m(1)]),_vm._v(" "),_c('br'),_vm._v(" "),_c('div',{staticClass:"pretty p-default"},[_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.numbers),expression:"numbers"}],attrs:{"type":"checkbox","id":"theme","value":"dark"},domProps:{"checked":Array.isArray(_vm.numbers)?_vm._i(_vm.numbers,"dark")>-1:(_vm.numbers)},on:{"change":function($event){var $$a=_vm.numbers,$$el=$event.target,$$c=$$el.checked?(true):(false);if(Array.isArray($$a)){var $$v="dark",$$i=_vm._i($$a,$$v);if($$el.checked){$$i<0&&(_vm.numbers=$$a.concat([$$v]))}else{$$i>-1&&(_vm.numbers=$$a.slice(0,$$i).concat($$a.slice($$i+1)))}}else{_vm.numbers=$$c}}}}),_vm._v(" "),_vm._m(2)]),_vm._v(" "),_c('br'),_vm._v(" "),_c('br'),_vm._v(" "),_c('br'),_vm._v(" "),_c('br'),_vm._v(" "),_c('br'),_vm._v(" "),_c('br'),_vm._v(" "),_c('br'),_vm._v(" "),_c('br'),_vm._v(" "),_c('br'),_vm._v(" "),_c('br'),_vm._v(" "),_c('br'),_vm._v(" "),_c('br')])])]),_vm._v(" "),_c('div',{attrs:{"id":"windgraphid"}}),_vm._v(" "),_c('div',{attrs:{"id":"windgraphidfocus"}})])}
+var staticRenderFns = [function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"state"},[_c('label',{attrs:{"for":"threshold"}},[_vm._v("Threshold wind at 15mph")])])},function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"state"},[_c('label',{attrs:{"for":"theme"}},[_vm._v("dark theme")])])},function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"state"},[_c('label',{attrs:{"for":"numbers"}},[_vm._v("numbers")])])}]
 var esExports = { render: render, staticRenderFns: staticRenderFns }
 /* harmony default export */ __webpack_exports__["a"] = (esExports);
 
@@ -75629,7 +75690,7 @@ var esExports = { render: render, staticRenderFns: staticRenderFns }
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__babel_loader_node_modules_vue_loader_lib_selector_type_script_index_0_arrow_vue__ = __webpack_require__(313);
 /* unused harmony namespace reexport */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__node_modules_vue_loader_lib_template_compiler_index_id_data_v_70f55a7d_hasScoped_false_buble_transforms_node_modules_vue_loader_lib_selector_type_template_index_0_arrow_vue__ = __webpack_require__(691);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__node_modules_vue_loader_lib_template_compiler_index_id_data_v_020812c2_hasScoped_false_buble_transforms_node_modules_vue_loader_lib_selector_type_template_index_0_arrow_vue__ = __webpack_require__(691);
 function injectStyle (ssrContext) {
   __webpack_require__(689)
 }
@@ -75649,7 +75710,7 @@ var __vue_scopeId__ = null
 var __vue_module_identifier__ = null
 var Component = normalizeComponent(
   __WEBPACK_IMPORTED_MODULE_0__babel_loader_node_modules_vue_loader_lib_selector_type_script_index_0_arrow_vue__["a" /* default */],
-  __WEBPACK_IMPORTED_MODULE_1__node_modules_vue_loader_lib_template_compiler_index_id_data_v_70f55a7d_hasScoped_false_buble_transforms_node_modules_vue_loader_lib_selector_type_template_index_0_arrow_vue__["a" /* default */],
+  __WEBPACK_IMPORTED_MODULE_1__node_modules_vue_loader_lib_template_compiler_index_id_data_v_020812c2_hasScoped_false_buble_transforms_node_modules_vue_loader_lib_selector_type_template_index_0_arrow_vue__["a" /* default */],
   __vue_template_functional__,
   __vue_styles__,
   __vue_scopeId__,
@@ -75670,7 +75731,7 @@ var content = __webpack_require__(690);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(21)("1d7fbb81", content, true, {});
+var update = __webpack_require__(21)("00a24170", content, true, {});
 
 /***/ }),
 /* 690 */
