@@ -38145,6 +38145,14 @@ var Component = normalizeComponent(
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -60356,7 +60364,7 @@ const routes = [{ path: "/", component: __WEBPACK_IMPORTED_MODULE_0__components_
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__babel_loader_node_modules_vue_loader_lib_selector_type_script_index_0_home_vue__ = __webpack_require__(101);
 /* unused harmony namespace reexport */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__node_modules_vue_loader_lib_template_compiler_index_id_data_v_289a74ae_hasScoped_false_buble_transforms_node_modules_vue_loader_lib_selector_type_template_index_0_home_vue__ = __webpack_require__(345);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__node_modules_vue_loader_lib_template_compiler_index_id_data_v_482921da_hasScoped_false_buble_transforms_node_modules_vue_loader_lib_selector_type_template_index_0_home_vue__ = __webpack_require__(345);
 function injectStyle (ssrContext) {
   __webpack_require__(342)
 }
@@ -60376,7 +60384,7 @@ var __vue_scopeId__ = null
 var __vue_module_identifier__ = null
 var Component = normalizeComponent(
   __WEBPACK_IMPORTED_MODULE_0__babel_loader_node_modules_vue_loader_lib_selector_type_script_index_0_home_vue__["a" /* default */],
-  __WEBPACK_IMPORTED_MODULE_1__node_modules_vue_loader_lib_template_compiler_index_id_data_v_289a74ae_hasScoped_false_buble_transforms_node_modules_vue_loader_lib_selector_type_template_index_0_home_vue__["a" /* default */],
+  __WEBPACK_IMPORTED_MODULE_1__node_modules_vue_loader_lib_template_compiler_index_id_data_v_482921da_hasScoped_false_buble_transforms_node_modules_vue_loader_lib_selector_type_template_index_0_home_vue__["a" /* default */],
   __vue_template_functional__,
   __vue_styles__,
   __vue_scopeId__,
@@ -60397,7 +60405,7 @@ var content = __webpack_require__(343);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(21)("42be0d59", content, true, {});
+var update = __webpack_require__(21)("63b013e1", content, true, {});
 
 /***/ }),
 /* 343 */
@@ -60686,7 +60694,7 @@ webpackContext.id = 344;
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-var render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',[_c('section',{staticClass:"section",attrs:{"id":"grad"}},[_c('div',{staticClass:"container is-fluid"},[_c('div',[_c('router-link',{staticClass:"homebutton button is-primary  is-inverted is-outlined",attrs:{"to":{ name: 'windgram', params: {id: 'broomfield' }},"tag":"a","active-class":"is-active","exact":""}},[_vm._v("Broomfield")]),_vm._v(" "),_c('router-link',{staticClass:"homebutton button is-primary  is-inverted is-outlined",attrs:{"to":{ name: 'windgram', params: {id: 'copper' }},"tag":"a","active-class":"is-active","exact":""}},[_vm._v("Copper")]),_vm._v(" "),_c('router-link',{staticClass:"homebutton button is-primary  is-inverted is-outlined",attrs:{"to":{ name: 'arrow'},"tag":"a","active-class":"is-active","exact":""}},[_vm._v("Arrow")])],1)])])])}
+var render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',[_c('section',{staticClass:"section",attrs:{"id":"grad"}},[_c('div',{staticClass:"container is-fluid"},[_c('div',[_c('router-link',{staticClass:"homebutton button is-primary  is-inverted is-outlined",attrs:{"to":{ name: 'windgram', params: {id: 'broomfield' }},"tag":"a","active-class":"is-active","exact":""}},[_vm._v("Broomfield")]),_vm._v(" "),_c('router-link',{staticClass:"homebutton button is-primary  is-inverted is-outlined",attrs:{"to":{ name: 'windgram', params: {id: 'copper' }},"tag":"a","active-class":"is-active","exact":""}},[_vm._v("Copper")]),_vm._v(" "),_c('router-link',{staticClass:"homebutton button is-primary  is-inverted is-outlined",attrs:{"to":{ name: 'windgram', params: {id: 'boulder' }},"tag":"a","active-class":"is-active","exact":""}},[_vm._v("Boulder")]),_vm._v(" "),_c('router-link',{staticClass:"homebutton button is-primary  is-inverted is-outlined",attrs:{"to":{ name: 'windgram', params: {id: 'grand_junction' }},"tag":"a","active-class":"is-active","exact":""}},[_vm._v("Grand Junction")]),_vm._v(" "),_c('router-link',{staticClass:"homebutton button is-primary  is-inverted is-outlined",attrs:{"to":{ name: 'windgram', params: {id: 'eagle' }},"tag":"a","active-class":"is-active","exact":""}},[_vm._v("Eagle")])],1)])])])}
 var staticRenderFns = []
 var esExports = { render: render, staticRenderFns: staticRenderFns }
 /* harmony default export */ __webpack_exports__["a"] = (esExports);

@@ -1,5 +1,5 @@
 var initial_state = {
-    'version': "0.0.1",
+    'version': "0.0.2",
     'url': { 'name': 'windgram', 
              'params': {'id': 'broomfield'} 
     },
@@ -12,6 +12,21 @@ var initial_state = {
         'copper': {
             'model': 'nam',
             'url': 'https://s3-us-west-2.amazonaws.com/meteo-data/sounding_copper.json',
+      
+         },
+         'boulder': {
+            'model': 'nam',
+            'url': 'https://s3-us-west-2.amazonaws.com/meteo-data/sounding_boulder.json',
+      
+         },
+         'grand_junction': {
+            'model': 'nam',
+            'url': 'https://s3-us-west-2.amazonaws.com/meteo-data/sounding_grand_junction.json',
+      
+         },
+         'eagle': {
+            'model': 'nam',
+            'url': 'https://s3-us-west-2.amazonaws.com/meteo-data/sounding_eagle.json',
       
          },
         'broomfield': {
