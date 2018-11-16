@@ -132,12 +132,12 @@ export default {
     mounted() {
 
 
-        // this.$store.dispatch("fetchSounding", { url: this.url, 
-        //                                         id: this.$route.params.id,
-        //                                         callback: this.onData })   
+        this.$store.dispatch("fetchSounding", { url: this.url, 
+                                                id: this.$route.params.id,
+                                                callback: this.onData })   
               
     
-        this.onData();
+        // this.onData();
         console.log("switching to page")
         // this.$router.push({name: 'windgram', 'params': {'id': this.$route.params.id }});
 
